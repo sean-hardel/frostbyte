@@ -62,7 +62,11 @@ trailer/                  vidéo — Remotion + @remotion/three
 - Unités en mètres, échelle réelle : la canette mesure 0.066 × 0.168 m.
 - Noms d'objets en anglais, préfixés : `Can_Body` (coque complète : fond bombé, corps, sertissage, couvercle), `Can_Tab` et `Can_Rivet` (enfants de `Can_Body`), `Can_CamTarget`. Matériaux : `MAT_Alu` (slot 0), `MAT_Label` (slot 1, zone d'étiquette z = 16 → 146 mm). UV cylindriques calculés dans `01` : u = 0,5 face avant (-Y), u croissant vers +X, couture à +Y, v = 0 → 1 sur la hauteur de l'étiquette.
 - Éclairage : HDRI Poly Haven `studio_small_03` (packé dans le `.blend`) + fill uniforme faible (débouche les reflets noirs sur l'alu). La caméra voit un fond uni `night` via Light Path > Is Camera Ray. Exposition AgX à +0,8 pour que l'étiquette sorte blanche ; l'intensité du fond est compensée (2^-exposition) pour garder la couleur `night` exacte. Réglages en tête de `05_world.py`.
-- Ordre des scripts : `00_scene_setup` → `01_can_body` → `02_can_tab` → `03_materials` → `04_camera` → `05_world` (après import de l'HDRI) → `06_export_glb`. Relancer `02` après `01`, car `01` recrée le parent.
+- Ordre des scripts : `00_scene_setup` → `01_can_body` → `02_can_tab` → `03_materials` → `04_camera` → `05_world` (après import de l'HDRI) → `06_export_glb` → `07_turntable`. Relancer `02` après `01`, car `01` recrée le parent.
+- **Animation (turntable)** : `07_turntable.py` anime `Can_Body` (0 → 450°) et orbite la caméra de 90° via l'empty `Cam_Orbit`. Timing : 150 images à 30 fps. Comme la rotation relative canette/caméra fait 360°, le logo est face caméra à la première et à la dernière image.
+  - **Export GLB** : il faut le faire à la frame 1 (pose de repos), sinon la rotation animée est figée dans le GLB.
+  - **Rendu** : PNG RGBA à fond transparent, dans `trailer/public/renders/can_turntable_0001.png` → `0150`. On le lance en ligne de commande pour ne pas bloquer Blender ni le MCP :
+    `"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b blender/canette.blend -a`
 - Chercher les nœuds de shader par `type` (ex. `n.type == "BSDF_PRINCIPLED"`), jamais par nom, car les noms sont localisés.
 - Ne pas écrire d'identifiants d'enum en dur : lire les valeurs valides via `bl_rna` (exception : `scene.render.engine`, à changer dans un `try/except TypeError`).
 - Régler les couleurs sur les entrées des nœuds, pas sur `material.diffuse_color`, qui ne sert qu'au viewport.

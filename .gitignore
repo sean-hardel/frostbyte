@@ -2,6 +2,8 @@ node_modules/
 dist/
 out/
 .remotion/
+# Séquences rendues par Blender (régénérables : voir CLAUDE.md, section turntable)
+trailer/public/renders/
 *.blend1
 *.blend2
 .DS_Store
