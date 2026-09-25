@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="%BRAND_NIGHT%" />
+    <meta name="description" content="FROST/BYTE — boisson énergisante zéro sucre (marque fictive). Stay sharp. Stay cold." />
+    <title>FROST/BYTE — Stay sharp. Stay cold.</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800&display=swap"
+    />
+    <link rel="preload" href="/canette.glb" as="fetch" crossorigin />
+  </head>
+  <body>
+    <div class="loader" id="loader" role="status" aria-live="polite">
+      <span class="loader__brand">FROST<span class="accent">/</span>BYTE</span>
+      <span class="loader__bar"><span></span></span>
+    </div>
+
+    <canvas id="webgl" aria-hidden="true"></canvas>
+
+    <header class="nav">
+      <a class="nav__brand" href="#top">FROST<span class="accent">/</span>BYTE</a>
+      <a class="nav__link" href="#saveurs">Saveurs</a>
+    </header>
+
+    <main id="top">
+      <!-- 1. Hero : canette au centre, titre géant derrière -->
+      <section class="section s-hero" data-section="hero">
+        <p class="eyebrow">// ENERGY DRINK · ZERO SUGAR · 500 ML</p>
+        <h1 class="hero__title"><span>FROST<span class="accent">/</span></span><span>BYTE</span></h1>
+        <p class="hero__tagline">Stay sharp. Stay cold.</p>
+        <p class="hero__hint"><span>Scroll</span></p>
+      </section>
+
+      <!-- 2. Spin : la canette fait un tour complet -->
+      <section class="section s-spin" data-section="spin">
+        <article class="fact reveal" data-side="left">
+          <span class="hud">01</span>
+          <h2 class="fact__value">0 g</h2>
+          <p>de sucre. Toute l'énergie, sans le crash.</p>
+        </article>
+        <article class="fact reveal" data-side="right">
+          <span class="hud">02</span>
+          <h2 class="fact__value">32 mg</h2>
+          <p>de caféine pour 100 ml. De quoi tenir la nuit.</p>
+        </article>
+        <article class="fact reveal" data-side="left">
+          <span class="hud">03</span>
+          <h2 class="fact__value">−2 °C</h2>
+          <p>Cryo blend : servie glacée, pensée pour le rester.</p>
+        </article>
+      </section>
+
+      <!-- 3. Zoom : la caméra plonge sur le logo -->
+      <section class="section s-zoom" data-section="zoom">
+        <div class="zoom__copy reveal">
+          <span class="hud">// FB-500 — CRYO BLEND</span>
+          <h2 class="zoom__title">Stay sharp.<br />Stay cold.</h2>
+        </div>
+      </section>
+
+      <!-- 4. Saveurs : générées depuis brand/tokens.json (src/sections/flavors.ts) -->
+      <div id="saveurs" class="flavors"></div>
+
+      <!-- 5. CTA -->
+      <section class="section s-cta" data-section="cta">
+        <div class="cta__copy reveal">
+          <h2 class="cta__title">Choisis ton froid.</h2>
+          <a class="btn" href="#top" aria-disabled="true">Précommander</a>
+        </div>
+        <footer class="footer">
+          <span>FROST/BYTE est une marque fictive — projet démo.</span>
+          <span class="hud">v1.0 // 2026</span>
+        </footer>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

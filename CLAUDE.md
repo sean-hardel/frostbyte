@@ -34,7 +34,7 @@ trailer/                  vidéo — Remotion + @remotion/three
    - x = 1536 correspond à la face avant (-Y dans Blender). x = 0 ≡ 3072 correspond à la couture, à l'arrière. Tout ce qui touche un bord doit être périodique sur 3072 px.
 2. Après un nouveau rendu, relancer `03_materials.py`, qui recharge `//textures/label.png` (chemin relatif, image non packée).
 3. `06_export_glb.py` exporte la canette seule (`Can_Body` + enfants) vers `site/public/canette.glb`, qui pèse environ 144 Ko pour environ 22k triangles. Il faut le relancer après chaque modification du modèle ou des matériaux. Le trailer copiera ce même fichier dans `trailer/public/`.
-   - **Compression Draco** : côté three.js, il faut `GLTFLoader` + `DRACOLoader` (decoder dans `three/examples/jsm/libs/draco/`).
+   - **Compression Draco** : côté three.js, `GLTFLoader` + `DRACOLoader.setDecoderPath(DRACO_GLTF_CONFIG)` (décodeur fourni par three, empaqueté par Vite, rien à copier).
    - **Textures WebP** (`EXT_texture_webp`) : l'étiquette est réduite à 2048 px à l'export, le `.blend` garde la version 3072 px.
    - **Rugosité de l'alu** : glTF n'exporte pas de procédural, donc elle est exportée en valeur fixe (0,27). Le script remet le shader d'origine après l'export.
    - **Repère** : unités en mètres, Y en haut, origine au centre du fond. Il faut recentrer (y ≈ 0.084) dans three.js pour faire tourner la canette sur elle-même.
@@ -51,7 +51,8 @@ trailer/                  vidéo — Remotion + @remotion/three
 | Dossier | Commande | Rôle |
 |---|---|---|
 | `site/` | `npm run dev` | serveur de dev |
-| `site/` | `npm run build` | build de prod |
+| `site/` | `npm run build` | typecheck (`tsc --noEmit`) + build de prod |
+| `site/` | `npm run preview` | sert `dist/` (test de la version de prod) |
 | `trailer/` | `npx remotion studio` | prévisualisation |
 | `trailer/` | `npx remotion render Trailer out/trailer.mp4` | rendu vidéo |
 
@@ -73,7 +74,12 @@ trailer/                  vidéo — Remotion + @remotion/three
 
 - TypeScript `strict` dans `site/` et `trailer/`.
 - Couleurs et polices lues depuis `brand/tokens.json` (en CSS custom properties côté site).
-- **Site** : un canvas three.js fixe en fond, des sections HTML qui défilent par-dessus. Une timeline ScrollTrigger (`scrub`) pilote la canette. Un module par section dans `site/src/sections/`. On respecte `prefers-reduced-motion`, on plafonne le DPR à 2 et le rendu doit être correct en largeur mobile.
+- **Site** : un canvas three.js fixe (transparent, `pointer-events: none`, au-dessus du contenu) et des sections HTML qui défilent. On respecte `prefers-reduced-motion`, le DPR est plafonné (1,5 sur mobile, 2 ailleurs) et le rendu doit être correct en largeur mobile.
+  - **Tokens** : injectés en CSS custom properties dans le `<head>` par un plugin de `vite.config.ts`. `styles.css` n'utilise que des `var(--…)`.
+  - **Animation** : un seul objet `SceneState` (`src/scroll/state.ts`), appliqué à la scène juste avant chaque rendu. Le rendu se fait à la demande (`stage.invalidate()`), jamais en boucle continue.
+  - **Découpage du scroll** : chaque section de `src/sections/` pilote la canette sur son propre intervalle (`segment()`, de « top bottom » à « bottom bottom », sans chevauchement). Elle le fait avec des `fromTo` entre des poses de `createPoses()`, évaluées au refresh, donc responsives. Pour ajouter une étape : nouvelle section + nouvelle pose, en partant de la pose de fin de la section précédente.
+  - **Saveurs** (`brand/tokens.json` → `flavors`) : le fond et l'accent passent par des variables CSS. L'étiquette est recolorée dans le shader par une mat3 (`src/three/palette.ts`) : `label.png` doit rester en 3 couleurs (frost, night, ice). Ajouter une couleur à l'étiquette casserait la recoloration.
+  - **Pas d'`pin`, pas de post-processing** : c'est un choix pour la fluidité sur mobile.
 - **Trailer** : les animations dépendent uniquement de `useCurrentFrame()` et `interpolate`/`spring`. Pas de `Math.random()` sans seed (utiliser `random(seed)` de Remotion), pas de `setTimeout` ni de CSS animations. Une séquence par fichier dans `trailer/src/scenes/`.
 
 ## Langue
