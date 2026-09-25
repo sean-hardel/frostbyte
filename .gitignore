@@ -1,0 +1,7 @@
+node_modules/
+dist/
+out/
+.remotion/
+*.blend1
+*.blend2
+.DS_Store
