@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-12 -12 430 473" width="430" height="473">
+  <title>FROST/BYTE</title>
+  <!--
+    Logo FROST/BYTE, version empilée.
+    Symbole : cristal de glace hexagonal, avec des « pixels » au bout des branches.
+    Wordmark : lettres tracées à la main sur une grille monospace (70 × 100, pas de 84),
+    trait de 16 et chanfreins à 45°. Aucune police requise.
+    Couleurs : night #0A2540, ice #00D4FF.
+  -->
+  <defs>
+    <clipPath id="line"><rect x="-20" y="0" width="460" height="100"/></clipPath>
+    <g id="arm">
+      <path d="M203,95 V37" stroke-width="10"/>
+      <path d="M188.9,50.9 L203,65 L217.1,50.9" stroke-width="8"/>
+      <rect x="198" y="17" width="10" height="10" fill="#0A2540" stroke="none"/>
+    </g>
+  </defs>
+
+  <!-- Symbole : cristal hexagonal (centre 203,95) -->
+  <g fill="none" stroke-linecap="square" stroke-linejoin="miter">
+    <polygon points="203,7 279.2,51 279.2,139 203,183 126.8,139 126.8,51" stroke="#0A2540" stroke-width="10"/>
+    <g stroke="#00D4FF">
+      <use xlink:href="#arm"/>
+      <use xlink:href="#arm" transform="rotate(60 203 95)"/>
+      <use xlink:href="#arm" transform="rotate(120 203 95)"/>
+      <use xlink:href="#arm" transform="rotate(180 203 95)"/>
+      <use xlink:href="#arm" transform="rotate(240 203 95)"/>
+      <use xlink:href="#arm" transform="rotate(300 203 95)"/>
+    </g>
+    <rect x="194" y="86" width="18" height="18" fill="#0A2540" stroke="none" transform="rotate(45 203 95)"/>
+  </g>
+
+  <!-- Wordmark -->
+  <g fill="none" stroke="#0A2540" stroke-width="16" stroke-linecap="square" stroke-linejoin="miter" stroke-miterlimit="4">
+    <!-- Ligne 1 : FROST -->
+    <g transform="translate(0 225)" clip-path="url(#line)">
+      <path transform="translate(0 0)" d="M62,8 H8 V92 M8,50 H50"/>
+      <path transform="translate(84 0)" d="M8,92 V8 H50 L62,20 V38 L50,50 H8"/>
+      <path transform="translate(84 0)" d="M34,47 L70.25,105" stroke-linecap="butt"/>
+      <path transform="translate(168 0)" d="M20,8 H50 L62,20 V80 L50,92 H20 L8,80 V20 Z"/>
+      <path transform="translate(252 0)" d="M62,8 H20 L8,20 V38 L20,50 H50 L62,62 V80 L50,92 H8"/>
+      <path transform="translate(336 0)" d="M8,8 H62 M35,8 V92"/>
+    </g>
+    <!-- Ligne 2 : /BYTE (barre oblique en cyan) -->
+    <g transform="translate(0 349)" clip-path="url(#line)">
+      <polygon points="0,100 18,100 70,0 52,0" fill="#00D4FF" stroke="none"/>
+      <path transform="translate(84 0)" d="M8,92 V8 H48 L60,20 V38 L50,50 H8 M8,50 H50 L62,62 V80 L50,92 H8"/>
+      <path transform="translate(168 0)" d="M8,8 L35,50 L62,8 M35,50 V92"/>
+      <path transform="translate(252 0)" d="M8,8 H62 M35,8 V92"/>
+      <path transform="translate(336 0)" d="M62,8 H8 V92 H62 M8,50 H48"/>
+    </g>
+  </g>
+</svg>

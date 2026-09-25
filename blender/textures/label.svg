@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 3072 1926" width="3072" height="1926">
+  <title>FROST/BYTE — étiquette 50 cl</title>
+  <!--
+    Étiquette dépliée de la canette 50 cl.
+    Ratio 3072 × 1926 = circonférence 207,3 mm × hauteur 130 mm (≈ 14,8 px/mm).
+    x = 1536 : face avant (-Y dans Blender). x = 0 ≡ 3072 : couture à l'arrière.
+    Tout élément qui touche un bord doit être périodique sur 3072 px.
+  -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.55" stop-color="#EAF6FF"/>
+      <stop offset="1" stop-color="#CFE6F7"/>
+    </linearGradient>
+    <linearGradient id="band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0A2540"/>
+      <stop offset="1" stop-color="#061729"/>
+    </linearGradient>
+    <!-- Graduations HUD en haut : période 64 px (3072 / 48) -->
+    <pattern id="ticks" width="64" height="60" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="4" height="36" fill="#0A2540"/>
+      <rect x="32" y="0" width="3" height="18" fill="#0A2540"/>
+    </pattern>
+    <!-- Facettes de glace : période 384 px (3072 / 8) -->
+    <pattern id="facets" width="384" height="1400" patternUnits="userSpaceOnUse">
+      <polygon points="0,1400 120,760 250,1400" fill="#00D4FF" opacity="0.07"/>
+      <polygon points="180,1400 300,960 384,1400" fill="#00D4FF" opacity="0.05"/>
+    </pattern>
+    <g id="crystal" fill="none" stroke-linecap="square">
+      <polygon points="0,-88 76.2,-44 76.2,44 0,88 -76.2,44 -76.2,-44" stroke="#0A2540" stroke-width="10"/>
+      <g stroke="#00D4FF">
+        <path d="M0,0 V-58 M-14.1,-44.1 L0,-30 L14.1,-44.1" stroke-width="9"/>
+        <path d="M0,0 V-58 M-14.1,-44.1 L0,-30 L14.1,-44.1" stroke-width="9" transform="rotate(60)"/>
+        <path d="M0,0 V-58 M-14.1,-44.1 L0,-30 L14.1,-44.1" stroke-width="9" transform="rotate(120)"/>
+        <path d="M0,0 V-58 M-14.1,-44.1 L0,-30 L14.1,-44.1" stroke-width="9" transform="rotate(180)"/>
+        <path d="M0,0 V-58 M-14.1,-44.1 L0,-30 L14.1,-44.1" stroke-width="9" transform="rotate(240)"/>
+        <path d="M0,0 V-58 M-14.1,-44.1 L0,-30 L14.1,-44.1" stroke-width="9" transform="rotate(300)"/>
+      </g>
+    </g>
+  </defs>
+
+  <!-- Fond givre + facettes -->
+  <rect width="3072" height="1926" fill="url(#bg)"/>
+  <rect width="3072" height="1400" fill="url(#facets)"/>
+  <rect x="0" y="40" width="3072" height="36" fill="url(#ticks)" opacity="0.35"/>
+  <rect x="0" y="96" width="3072" height="3" fill="#0A2540" opacity="0.25"/>
+
+  <!-- Bande nuit à arête de glace brisée (période 256 px, valleys à y = 1390) -->
+  <polygon fill="url(#band)" points="
+    0,1390 128,1250 256,1390 384,1320 512,1390 640,1180 768,1390 896,1290 1024,1390
+    1152,1230 1280,1390 1408,1340 1536,1390 1664,1200 1792,1390 1920,1300 2048,1390
+    2176,1260 2304,1390 2432,1330 2560,1390 2688,1210 2816,1390 2944,1280 3072,1390
+    3072,1926 0,1926"/>
+  <polyline fill="none" stroke="#00D4FF" stroke-width="6" stroke-linejoin="miter" points="
+    0,1360 128,1220 256,1360 384,1290 512,1360 640,1150 768,1360 896,1260 1024,1360
+    1152,1200 1280,1360 1408,1310 1536,1360 1664,1170 1792,1360 1920,1270 2048,1360
+    2176,1230 2304,1360 2432,1300 2560,1360 2688,1180 2816,1360 2944,1250 3072,1360"/>
+
+  <!-- FACE AVANT : logo empilé (logo.svg, 430 × 473 → 860 × 946) -->
+  <image xlink:href="logo.svg" x="1106" y="190" width="860" height="946"/>
+
+  <g font-family="JetBrains Mono" text-anchor="middle">
+    <text x="1536" y="1530" font-size="76" fill="#00D4FF" letter-spacing="6">STAY SHARP. STAY COLD.</text>
+    <text x="1536" y="1640" font-size="44" fill="#EAF6FF" letter-spacing="10">ZERO SUGAR — ENERGY DRINK</text>
+    <text x="1536" y="1790" font-size="52" fill="#9BA8B8" letter-spacing="8">500 ML</text>
+  </g>
+
+  <!-- CÔTÉS : cristal + texte HUD vertical (±736 px de la face avant, ≈ 86°) -->
+  <use xlink:href="#crystal" transform="translate(800 420) scale(1.1)"/>
+  <use xlink:href="#crystal" transform="translate(2272 420) scale(1.1)"/>
+  <g font-family="JetBrains Mono" font-size="40" fill="#0A2540" letter-spacing="12" text-anchor="middle">
+    <text transform="translate(815 880) rotate(-90)">FB-500 // CRYO BLEND</text>
+    <text transform="translate(2287 880) rotate(-90)">MINT × ICE // 32 MG</text>
+  </g>
+  <g font-family="JetBrains Mono" font-size="34" fill="#EAF6FF" text-anchor="middle" letter-spacing="4">
+    <text x="800" y="1620">-2 °C</text>
+    <text x="2272" y="1620">V1.0</text>
+  </g>
+
+  <!-- ARRIÈRE (centré sur x = 256, à gauche de la couture) : mentions -->
+  <g font-family="JetBrains Mono" fill="#0A2540" font-size="30">
+    <text x="90" y="300" font-size="38" letter-spacing="4">INGRÉDIENTS</text>
+    <text x="90" y="360">Eau gazéifiée, taurine,</text>
+    <text x="90" y="402">caféine (32 mg/100 ml),</text>
+    <text x="90" y="444">extrait de menthe glaciale,</text>
+    <text x="90" y="486">vitamines B3, B6, B12,</text>
+    <text x="90" y="528">édulcorants (sucralose).</text>
+    <text x="90" y="620" font-size="26">Teneur élevée en caféine.</text>
+    <text x="90" y="658" font-size="26">Déconseillé aux enfants et</text>
+    <text x="90" y="696" font-size="26">aux femmes enceintes.</text>
+  </g>
+  <!-- ARRIÈRE DROIT (à droite de la couture) : code-barres décoratif -->
+  <text x="2600" y="540" font-family="JetBrains Mono" font-size="24" fill="#0A2540" opacity="0.6">Marque fictive — projet démo.</text>
+  <g fill="#0A2540" transform="translate(2640 300)">
+    <rect x="0" width="6" height="140"/><rect x="12" width="3" height="140"/><rect x="20" width="9" height="140"/>
+    <rect x="34" width="3" height="140"/><rect x="42" width="6" height="140"/><rect x="54" width="3" height="140"/>
+    <rect x="62" width="12" height="140"/><rect x="80" width="3" height="140"/><rect x="88" width="6" height="140"/>
+    <rect x="100" width="3" height="140"/><rect x="108" width="9" height="140"/><rect x="122" width="3" height="140"/>
+    <rect x="130" width="6" height="140"/><rect x="142" width="3" height="140"/><rect x="150" width="12" height="140"/>
+    <rect x="168" width="3" height="140"/><rect x="176" width="6" height="140"/><rect x="188" width="9" height="140"/>
+    <rect x="202" width="3" height="140"/><rect x="210" width="6" height="140"/><rect x="222" width="3" height="140"/>
+    <rect x="230" width="9" height="140"/><rect x="244" width="3" height="140"/><rect x="252" width="6" height="140"/>
+  </g>
+</svg>

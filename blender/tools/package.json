@@ -1,0 +1,11 @@
+{
+  "name": "frostbyte-blender-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "textures": "node render-textures.mjs"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2"
+  }
+}

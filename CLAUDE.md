@@ -16,9 +16,11 @@ Marque fictive de boisson énergisante, présentée en trois livrables : un mod�
 
 ```
 brand/tokens.json         tokens de marque partagés
+brand/fonts/              JetBrains Mono (TTF, OFL), utilisée pour rendre les SVG
 blender/canette.blend     fichier Blender source
 blender/scripts/NN_*.py   scripts rejouables (un par étape MCP)
-blender/textures/         label.png (rendu depuis Remotion), normal maps
+blender/textures/         logo.svg, label.svg (sources) → logo.png, label.png (générés)
+blender/tools/            rasteriseur SVG → PNG (Node + @resvg/resvg-js)
 blender/export/canette.glb  export glTF (Draco)
 site/                     landing page — Vite + TS + three + gsap ScrollTrigger + lenis
 trailer/                  vidéo — Remotion + @remotion/three
@@ -26,9 +28,11 @@ trailer/                  vidéo — Remotion + @remotion/three
 
 ### Flux d'assets
 
-1. L'étiquette est une composition Remotion `Label` (2048×1024). On la rend vers `blender/textures/label.png` :
-   `npx remotion still Label ../blender/textures/label.png` (depuis `trailer/`).
-2. Blender applique le label, puis exporte `blender/export/canette.glb`.
+1. Le logo (`logo.svg`) et l'étiquette dépliée (`label.svg`, qui inclut le logo) sont des SVG écrits à la main. On les rend en PNG avec `npm run textures` depuis `blender/tools/` (première fois : `npm install`).
+   - Le wordmark est fait de tracés, sans police. Les petits textes de l'étiquette utilisent JetBrains Mono via `brand/fonts/`.
+   - `label.svg` fait 3072 × 1926 px, soit le ratio exact de la zone d'étiquette (circonférence 207,3 mm × hauteur 130 mm). Ne pas changer ce ratio.
+   - x = 1536 correspond à la face avant (-Y dans Blender). x = 0 ≡ 3072 correspond à la couture, à l'arrière. Tout ce qui touche un bord doit être périodique sur 3072 px.
+2. Après un nouveau rendu, relancer `03_materials.py`, qui recharge `//textures/label.png` (chemin relatif, image non packée). Blender exporte ensuite `blender/export/canette.glb`.
 3. Le GLB est copié dans `site/public/models/canette.glb` et `trailer/public/canette.glb`. Après chaque ré-export, il faut recopier les deux.
 
 ## Stack
@@ -51,7 +55,9 @@ trailer/                  vidéo — Remotion + @remotion/three
 
 - Avant d'écrire du code, appeler `get_addon_status` puis `get_scene_info`.
 - Unités en mètres, échelle réelle : la canette mesure 0.066 × 0.168 m.
-- Noms d'objets en anglais, préfixés : `Can_Body`, `Can_Lid`, `Can_Tab`, `Can_Bottom`. Matériaux : `MAT_Label`, `MAT_Alu`.
+- Noms d'objets en anglais, préfixés : `Can_Body` (coque complète : fond bombé, corps, sertissage, couvercle), `Can_Tab` et `Can_Rivet` (enfants de `Can_Body`), `Can_CamTarget`. Matériaux : `MAT_Alu` (slot 0), `MAT_Label` (slot 1, zone d'étiquette z = 16 → 146 mm). UV cylindriques calculés dans `01` : u = 0,5 face avant (-Y), u croissant vers +X, couture à +Y, v = 0 → 1 sur la hauteur de l'étiquette.
+- Éclairage : HDRI Poly Haven `studio_small_03` (packé dans le `.blend`). La caméra voit un fond uni `night` via Light Path > Is Camera Ray.
+- Ordre des scripts : `00_scene_setup` → `01_can_body` → `02_can_tab` → `03_materials` → `04_camera` → `05_world` (après import de l'HDRI). Relancer `02` après `01`, car `01` recrée le parent.
 - Chercher les nœuds de shader par `type` (ex. `n.type == "BSDF_PRINCIPLED"`), jamais par nom, car les noms sont localisés.
 - Ne pas écrire d'identifiants d'enum en dur : lire les valeurs valides via `bl_rna` (exception : `scene.render.engine`, à changer dans un `try/except TypeError`).
 - Régler les couleurs sur les entrées des nœuds, pas sur `material.diffuse_color`, qui ne sert qu'au viewport.
