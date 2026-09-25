@@ -21,7 +21,7 @@ blender/canette.blend     fichier Blender source
 blender/scripts/NN_*.py   scripts rejouables (un par étape MCP)
 blender/textures/         logo.svg, label.svg (sources) → logo.png, label.png (générés)
 blender/tools/            rasteriseur SVG → PNG (Node + @resvg/resvg-js)
-blender/export/canette.glb  export glTF (Draco)
+site/public/canette.glb   export web de la canette (généré par 06_export_glb.py)
 site/                     landing page — Vite + TS + three + gsap ScrollTrigger + lenis
 trailer/                  vidéo — Remotion + @remotion/three
 ```
@@ -32,8 +32,12 @@ trailer/                  vidéo — Remotion + @remotion/three
    - Le wordmark est fait de tracés, sans police. Les petits textes de l'étiquette utilisent JetBrains Mono via `brand/fonts/`.
    - `label.svg` fait 3072 × 1926 px, soit le ratio exact de la zone d'étiquette (circonférence 207,3 mm × hauteur 130 mm). Ne pas changer ce ratio.
    - x = 1536 correspond à la face avant (-Y dans Blender). x = 0 ≡ 3072 correspond à la couture, à l'arrière. Tout ce qui touche un bord doit être périodique sur 3072 px.
-2. Après un nouveau rendu, relancer `03_materials.py`, qui recharge `//textures/label.png` (chemin relatif, image non packée). Blender exporte ensuite `blender/export/canette.glb`.
-3. Le GLB est copié dans `site/public/models/canette.glb` et `trailer/public/canette.glb`. Après chaque ré-export, il faut recopier les deux.
+2. Après un nouveau rendu, relancer `03_materials.py`, qui recharge `//textures/label.png` (chemin relatif, image non packée).
+3. `06_export_glb.py` exporte la canette seule (`Can_Body` + enfants) vers `site/public/canette.glb`, qui pèse environ 144 Ko pour environ 22k triangles. Il faut le relancer après chaque modification du modèle ou des matériaux. Le trailer copiera ce même fichier dans `trailer/public/`.
+   - **Compression Draco** : côté three.js, il faut `GLTFLoader` + `DRACOLoader` (decoder dans `three/examples/jsm/libs/draco/`).
+   - **Textures WebP** (`EXT_texture_webp`) : l'étiquette est réduite à 2048 px à l'export, le `.blend` garde la version 3072 px.
+   - **Rugosité de l'alu** : glTF n'exporte pas de procédural, donc elle est exportée en valeur fixe (0,27). Le script remet le shader d'origine après l'export.
+   - **Repère** : unités en mètres, Y en haut, origine au centre du fond. Il faut recentrer (y ≈ 0.084) dans three.js pour faire tourner la canette sur elle-même.
 
 ## Stack
 
@@ -57,7 +61,7 @@ trailer/                  vidéo — Remotion + @remotion/three
 - Unités en mètres, échelle réelle : la canette mesure 0.066 × 0.168 m.
 - Noms d'objets en anglais, préfixés : `Can_Body` (coque complète : fond bombé, corps, sertissage, couvercle), `Can_Tab` et `Can_Rivet` (enfants de `Can_Body`), `Can_CamTarget`. Matériaux : `MAT_Alu` (slot 0), `MAT_Label` (slot 1, zone d'étiquette z = 16 → 146 mm). UV cylindriques calculés dans `01` : u = 0,5 face avant (-Y), u croissant vers +X, couture à +Y, v = 0 → 1 sur la hauteur de l'étiquette.
 - Éclairage : HDRI Poly Haven `studio_small_03` (packé dans le `.blend`) + fill uniforme faible (débouche les reflets noirs sur l'alu). La caméra voit un fond uni `night` via Light Path > Is Camera Ray. Exposition AgX à +0,8 pour que l'étiquette sorte blanche ; l'intensité du fond est compensée (2^-exposition) pour garder la couleur `night` exacte. Réglages en tête de `05_world.py`.
-- Ordre des scripts : `00_scene_setup` → `01_can_body` → `02_can_tab` → `03_materials` → `04_camera` → `05_world` (après import de l'HDRI). Relancer `02` après `01`, car `01` recrée le parent.
+- Ordre des scripts : `00_scene_setup` → `01_can_body` → `02_can_tab` → `03_materials` → `04_camera` → `05_world` (après import de l'HDRI) → `06_export_glb`. Relancer `02` après `01`, car `01` recrée le parent.
 - Chercher les nœuds de shader par `type` (ex. `n.type == "BSDF_PRINCIPLED"`), jamais par nom, car les noms sont localisés.
 - Ne pas écrire d'identifiants d'enum en dur : lire les valeurs valides via `bl_rna` (exception : `scene.render.engine`, à changer dans un `try/except TypeError`).
 - Régler les couleurs sur les entrées des nœuds, pas sur `material.diffuse_color`, qui ne sert qu'au viewport.

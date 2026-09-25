@@ -76,6 +76,10 @@ tex.interpolation = "Cubic"
 nt.links.new(uvmap.outputs["UV"], tex.inputs["Vector"])
 nt.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
 
+# Surfaces fermées : simple face (glTF doubleSided = false, moins coûteux côté web)
+for mat in (alu, label):
+    mat.use_backface_culling = True
+
 # --- Assignation ---
 # Can_Body : on remplit les slots existants (créés par 01) pour garder les material_index
 body = bpy.data.objects["Can_Body"]

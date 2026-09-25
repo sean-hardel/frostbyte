@@ -19,9 +19,10 @@ PROFILE = [
     # raccord fond → corps
     (0.0285, 0.0020), (0.0305, 0.0050), (0.0320, 0.0085), (0.0328, 0.0115),
     (0.0330, 0.0140),
-    # corps (zone étiquette entre LABEL_Z)
-    (0.0330, LABEL_Z[0]), (0.0330, 0.050), (0.0330, 0.080), (0.0330, 0.110),
-    (0.0330, LABEL_Z[1]), (0.0330, 0.148),
+    # corps (zone étiquette entre LABEL_Z). Les boucles à ±1 mm des bordures maintiennent
+    # la zone en place sous la subdivision, sinon elle rétrécit de ~8 % (étiquette écrasée).
+    (0.0330, LABEL_Z[0]), (0.0330, LABEL_Z[0] + 0.001), (0.0330, 0.050), (0.0330, 0.080),
+    (0.0330, 0.110), (0.0330, LABEL_Z[1] - 0.001), (0.0330, LABEL_Z[1]), (0.0330, 0.148),
     # épaule et col
     (0.0327, 0.1505), (0.0318, 0.1535), (0.0303, 0.1565), (0.0288, 0.1590),
     (0.0278, 0.1610), (0.0272, 0.1628),
