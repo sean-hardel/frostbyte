@@ -37,8 +37,8 @@ noise = nt.nodes.new("ShaderNodeTexNoise")
 noise.inputs["Scale"].default_value = 1.0
 noise.inputs["Detail"].default_value = 4.0
 ramp = nt.nodes.new("ShaderNodeMapRange")
-ramp.inputs["To Min"].default_value = 0.22
-ramp.inputs["To Max"].default_value = 0.42
+ramp.inputs["To Min"].default_value = 0.20
+ramp.inputs["To Max"].default_value = 0.34
 nt.links.new(coord.outputs["Object"], mapping.inputs["Vector"])
 nt.links.new(mapping.outputs["Vector"], noise.inputs["Vector"])
 nt.links.new(noise.outputs["Fac"], ramp.inputs["Value"])
@@ -53,9 +53,9 @@ nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
 label = fresh_material("MAT_Label")
 nt = label.node_tree
 bsdf = principled(label)
-set_input(bsdf, "Metallic", 0.1)
-set_input(bsdf, "Roughness", 0.3)
-set_input(bsdf, "Coat Weight", 0.4)  # vernis d'impression
+set_input(bsdf, "Metallic", 0.0)  # encre opaque : tout métallique assombrit le blanc
+set_input(bsdf, "Roughness", 0.35)
+set_input(bsdf, "Coat Weight", 0.3)  # vernis d'impression
 
 # Texture d'étiquette : textures/label.png (rendue depuis label.svg par blender/tools)
 # Chemin relatif au .blend, non packé : relancer ce script après un nouveau rendu du PNG.

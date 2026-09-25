@@ -1,10 +1,14 @@
-# Monde : l'HDRI Poly Haven (studio_small_03) éclaire et se reflète sur le métal,
-# mais la caméra voit un fond uni bleu nuit (#0A2540) via Light Path > Is Camera Ray.
+# Monde : l'HDRI Poly Haven (studio_small_03) + un fill uniforme éclairent et se reflètent
+# sur le métal, mais la caméra voit un fond uni bleu nuit (#0A2540) via Light Path > Is Camera Ray.
 # Prérequis : l'HDRI a été importé par download_polyhaven_asset (nœud Environment Texture présent).
 # Idempotent : reconstruit le mélange à chaque exécution.
 import bpy
 
 NIGHT = "#0A2540"
+EXPOSURE = 0.8         # AgX : sans ça, un blanc diffus sort à ~80 % de gris
+HDRI_STRENGTH = 1.0
+FILL_COLOR = "#DDE6EE"  # lumière d'ambiance uniforme : débouche les zones noires du studio
+FILL_STRENGTH = 0.12   # dans les reflets de l'alu
 
 
 def srgb_to_linear(hex_color):
@@ -28,10 +32,24 @@ hdri_bg = next(
     if n.type == "BACKGROUND" and any(l.from_node == env for l in n.inputs["Color"].links)
 )
 
+hdri_bg.inputs["Strength"].default_value = HDRI_STRENGTH
+
+# Éclairage et reflets = HDRI + fill uniforme
+fill_bg = nt.nodes.new("ShaderNodeBackground")
+fill_bg.label = "FB_fill"
+fill_bg.inputs["Color"].default_value = srgb_to_linear(FILL_COLOR)
+fill_bg.inputs["Strength"].default_value = FILL_STRENGTH
+add = nt.nodes.new("ShaderNodeAddShader")
+add.label = "FB_add"
+nt.links.new(hdri_bg.outputs["Background"], add.inputs[0])
+nt.links.new(fill_bg.outputs["Background"], add.inputs[1])
+
 solid_bg = nt.nodes.new("ShaderNodeBackground")
 solid_bg.label = "FB_solid"
 solid_bg.inputs["Color"].default_value = srgb_to_linear(NIGHT)
-solid_bg.inputs["Strength"].default_value = 1.0
+# Compense l'exposition : le fond garde exactement sa couleur à l'écran
+bpy.context.scene.view_settings.exposure = EXPOSURE
+solid_bg.inputs["Strength"].default_value = 2.0 ** -EXPOSURE
 
 light_path = nt.nodes.new("ShaderNodeLightPath")
 light_path.label = "FB_lightpath"
@@ -39,7 +57,7 @@ mix = nt.nodes.new("ShaderNodeMixShader")
 mix.label = "FB_mix"
 
 nt.links.new(light_path.outputs["Is Camera Ray"], mix.inputs["Fac"])
-nt.links.new(hdri_bg.outputs["Background"], mix.inputs[1])
+nt.links.new(add.outputs["Shader"], mix.inputs[1])
 nt.links.new(solid_bg.outputs["Background"], mix.inputs[2])
 nt.links.new(mix.outputs["Shader"], out.inputs["Surface"])
 
