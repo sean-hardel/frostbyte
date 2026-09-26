@@ -73,6 +73,7 @@ const fragmentShader = /* glsl */ `
 `;
 
 export type Particles = {
+  points: THREE.Points;
   uniforms: {
     uScroll: { value: number };
     uVelocity: { value: number };
@@ -124,5 +125,5 @@ export function createParticles(stage: Stage, color: THREE.Color): Particles {
   points.renderOrder = 2;
   stage.scene.add(points);
 
-  return { uniforms };
+  return { uniforms, points };
 }

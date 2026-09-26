@@ -25,7 +25,10 @@ function brandTokens(): Plugin {
   };
 }
 
-export default defineConfig({
+export default defineConfig(() => ({
+  // GitHub Pages : le site est servi sous https://sean-hardel.github.io/frostbyte/.
+  // Même base en dev, build et preview (sinon preview sert à « / » un build qui pointe vers /frostbyte/).
+  base: "/frostbyte/",
   plugins: [brandTokens()],
   server: {
     // brand/tokens.json est importé depuis la racine du repo
@@ -33,7 +36,7 @@ export default defineConfig({
   },
   build: {
     target: "es2022",
-    // three.js seul pèse ~600 Ko minifié (~170 Ko gzip) : le bundle unique est attendu
+    // three.js (~600 Ko minifié) est dans le chunk de la phase 2 (three/boot.ts), chargé au premier geste
     chunkSizeWarningLimit: 900,
   },
-});
+}));

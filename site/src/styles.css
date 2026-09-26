@@ -53,6 +53,49 @@ a {
   height: 100lvh;
   z-index: 1;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+/*
+  Image fixe de la canette, en attendant la 3D (voir main.ts). Même boîte que le canvas ; la taille
+  et la position reproduisent le cadrage de la pose hero (scroll/state.ts, fov 30°) :
+  px par mètre = min(0,62 × hauteur / 0,168 m, k × largeur / 0,066 m), k = 0,35 (paysage) ou 0,55 (portrait).
+  La boîte de la canette (--w, --h, --cx, --cy, en mètres) vient de src/hero-poster.css.
+*/
+.hero-can-frame {
+  position: fixed;
+  inset: 0;
+  height: 100lvh;
+  z-index: 1;
+  pointer-events: none;
+  container-type: size;
+  transition: opacity 0.35s ease;
+}
+
+.hero-can {
+  --ppm: min(0.62 * 100cqh / 0.168, 0.35 * 100cqw / 0.066);
+  position: absolute;
+  width: calc(var(--ppm) * var(--w));
+  height: calc(var(--ppm) * var(--h));
+  left: calc(50cqw + var(--ppm) * (var(--cx) - var(--w) / 2));
+  top: calc(50cqh - var(--ppm) * (var(--cy) + var(--h) / 2));
+  max-width: none;
+}
+
+@container (max-aspect-ratio: 1 / 1) {
+  .hero-can {
+    --ppm: min(0.62 * 100cqh / 0.168, 0.55 * 100cqw / 0.066);
+  }
+}
+
+/* 3D prête : fondu image → canvas */
+.is-3d #webgl {
+  opacity: 1;
+}
+
+.is-3d .hero-can-frame {
+  opacity: 0;
 }
 
 /* ---------- Loader ---------- */
@@ -372,6 +415,8 @@ main {
 .s-trailer {
   min-height: 100vh;
   display: grid;
+  /* minmax(0, …) : un mot long du titre ne doit jamais élargir la colonne (débordement horizontal sur mobile) */
+  grid-template-columns: minmax(0, 1fr);
   align-content: center;
   gap: 32px;
 }
@@ -385,7 +430,8 @@ main {
 .trailer__title {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(36px, 7vw, 96px);
+  /* « mouvement. » ≈ 10,1 em en Syne 800 : 8,4vw tient dans la colonne jusqu'à 320 px de large */
+  font-size: 8.4vw;
   line-height: 0.95;
   margin-top: 8px;
 }

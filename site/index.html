@@ -7,7 +7,6 @@
     <meta name="description" content="FROST/BYTE — boisson énergisante zéro sucre (marque fictive). Stay sharp. Stay cold." />
     <title>FROST/BYTE — Stay sharp. Stay cold.</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preload" href="/canette.glb" as="fetch" crossorigin />
   </head>
   <body>
     <!--
@@ -39,6 +38,10 @@
       <span class="loader__brand">FROST<span class="accent">/</span>BYTE</span>
     </div>
 
+    <!-- Canette : image fixe (dès le premier affichage) puis 3D au premier geste (src/three/boot.ts) -->
+    <div class="hero-can-frame" aria-hidden="true">
+      <img class="hero-can" src="/hero-can.webp" alt="" fetchpriority="high" decoding="async" />
+    </div>
     <canvas id="webgl" aria-hidden="true"></canvas>
 
     <header class="nav">

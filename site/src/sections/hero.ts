@@ -3,19 +3,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Ctx } from "../scroll/state";
 
 /**
- * Hero : pose initiale, flottement idle et parallaxe souris tant que le hero est visible,
- * titre qui s'efface au scroll.
+ * Hero (canette) : pose initiale, flottement idle et parallaxe souris tant que le hero est visible.
+ * Le fondu du titre au scroll est dans sections/text.ts (phase 1, sans three.js).
  */
 export function hero(ctx: Ctx) {
   const section = document.querySelector<HTMLElement>(".s-hero")!;
   Object.assign(ctx.state, ctx.poses.hero());
-
-  gsap.to(".hero__title", {
-    yPercent: -30,
-    opacity: 0,
-    ease: "none",
-    scrollTrigger: { trigger: section, start: "top top", end: "bottom top", scrub: ctx.scrub },
-  });
 
   if (ctx.reduced) return;
 

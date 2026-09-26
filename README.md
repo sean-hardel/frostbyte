@@ -1,5 +1,9 @@
 # FROST/BYTE
 
+[![CI](https://github.com/sean-hardel/frostbyte/actions/workflows/ci.yml/badge.svg)](https://github.com/sean-hardel/frostbyte/actions/workflows/ci.yml)
+
+**Site en ligne : [sean-hardel.github.io/frostbyte](https://sean-hardel.github.io/frostbyte/)**
+
 Marque fictive de boisson énergisante (projet démo), présentée en trois livrables :
 
 - **Modèle 3D** de la canette, construit dans Blender via le MCP Blender (`blender/`)
@@ -22,6 +26,13 @@ La musique du trailer n'est pas versionnée : la télécharger depuis
 [Pixabay](https://pixabay.com/music/upbeat-60000-light-years-140306/) et la placer dans `trailer/public/musique.mp3`.
 
 Conventions, pipeline d'assets et détails techniques : [CLAUDE.md](CLAUDE.md).
+
+## CI et déploiement
+
+Le workflow [`ci.yml`](.github/workflows/ci.yml) tourne sur chaque push et chaque pull request : installation,
+typecheck et build du site, puis Lighthouse CI en profil mobile et desktop (3 passes chacun). Le job échoue si
+la performance, l'accessibilité ou les bonnes pratiques passent sous 90. Sur un push vers `main`, si tout passe,
+le site est déployé sur GitHub Pages. Les rapports Lighthouse sont disponibles en artefact de chaque run.
 
 ## Crédits
 

@@ -1,6 +1,6 @@
 import { flavors } from "../brand";
 import type { Ctx } from "../scroll/state";
-import { move, reveal, segment } from "../scroll/segment";
+import { move, segment } from "../scroll/segment";
 
 /*
   CTA : la canette revient, dans la dernière saveur. Elle était sortie par le haut pendant le trailer ;
@@ -16,6 +16,4 @@ export function cta(ctx: Ctx) {
   move(tl, ctx, () => p.away(n, last), () => p.awayRight(n, last), 0.4, "none");
   move(tl, ctx, () => p.awayRight(n, last), () => p.ctaOffRight(n, last), 0.45, "none");
   move(tl, ctx, () => p.ctaOffRight(n, last), () => p.cta(n, last), 0.15, "power2.out");
-
-  reveal(section.querySelector(".cta__copy")!);
 }

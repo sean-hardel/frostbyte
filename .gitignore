@@ -10,3 +10,4 @@ trailer/public/renders/
 __pycache__/
 # Musique du trailer : fournie localement, non versionnée (voir trailer/public/sfx/CREDITS.md)
 trailer/public/musique.mp3
+.lighthouseci/

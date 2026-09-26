@@ -1,6 +1,6 @@
 import { flavors, type Flavor } from "../brand";
 import type { Ctx } from "../scroll/state";
-import { move, reveal, segment } from "../scroll/segment";
+import { move, segment } from "../scroll/segment";
 
 /** Textes propres au site (le reste vient de brand/tokens.json). */
 const COPY: Record<string, { desc: string; kcal: number }> = {
@@ -67,9 +67,5 @@ export function flavorsScroll(ctx: Ctx) {
     const from = i === 0 ? ctx.poses.zoom : () => ctx.poses.side(i, i - 1);
     move(tl, ctx, from, () => ctx.poses.side(i + 1, i), 0.8, "power2.inOut");
     tl.to({}, { duration: 0.2 }); // maintien : la saveur est lisible avant la suivante
-
-    // Visible tant que la section est posée ; s'efface dès qu'elle repart vers le haut,
-    // sinon (mobile) le bloc remonterait à travers la canette placée au-dessus
-    reveal(section.querySelector(".flavor__copy")!, section, { start: "top 75%", end: "bottom 92%" });
   });
 }

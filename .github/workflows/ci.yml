@@ -1,0 +1,76 @@
+# CI du site : typecheck + build + Lighthouse CI (mobile et desktop, seuil 90) sur chaque push et PR ;
+# déploiement sur GitHub Pages sur push vers main uniquement, si tout est passé.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build + Lighthouse
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Dépendances
+        run: npm ci
+
+      - name: Typecheck + build (base /frostbyte/)
+        run: npm run build
+
+      - name: Lighthouse CI — mobile
+        run: npx --yes @lhci/cli@0.15.1 autorun --upload.outputDir=.lighthouseci/mobile
+
+      - name: Lighthouse CI — desktop
+        run: npx --yes @lhci/cli@0.15.1 autorun --collect.settings.preset=desktop --upload.outputDir=.lighthouseci/desktop
+
+      - name: Rapports Lighthouse
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse
+          path: |
+            site/.lighthouseci/mobile
+            site/.lighthouseci/desktop
+          if-no-files-found: ignore
+
+      - name: Artefact GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site/dist
+
+  deploy:
+    name: Déploiement GitHub Pages
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

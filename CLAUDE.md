@@ -54,7 +54,8 @@ trailer/                  vidéo — Remotion + @remotion/transitions (rendus Bl
 |---|---|---|
 | `site/` | `npm run dev` | serveur de dev |
 | `site/` | `npm run build` | typecheck (`tsc --noEmit`) + build de prod |
-| `site/` | `npm run preview` | sert `dist/` (test de la version de prod) |
+| `site/` | `npm run preview` | sert `dist/` sur `/frostbyte/` (test de la version de prod) |
+| `site/` | `node scripts/make-hero-poster.mjs` | régénère l'image fixe de la canette du hero (après `npm run build`) |
 | `trailer/` | `npm run studio` | prévisualisation (vérifie d'abord les rendus Blender) |
 | `trailer/` | `npm run render:shots` | rendus Blender Cycles GPU de tous les plans (~1 h) |
 | `trailer/` | `npm run render` | vidéos → `out/trailer.mp4` (16:9) et `out/trailer-vertical.mp4` (9:16), h264 crf 18 |
@@ -100,6 +101,13 @@ trailer/                  vidéo — Remotion + @remotion/transitions (rendus Bl
   - **Métal** : tone mapping Neutral (pas AgX, qui délave). Le premier rendu utilise `RoomEnvironment`, puis `public/env/studio_small_03_512.hdr` le remplace en différé : c'est le même HDRI que dans Blender, réduit à 512 Ko par `scripts/make-env.mjs`. Les stries de l'alu viennent d'une texture de bruit générée dans `can.ts` (rugosité et relief, variation le long de u). La languette et le rivet, sans UV, utilisent une variante lisse.
   - **Chevauchements** : la canette ne doit jamais recouvrir un titre. Chaque pose laisse une colonne libre au texte (droite/gauche en paysage, haut/bas en portrait), y compris pour le CTA. Les textes de saveur s'effacent dès que leur section repart. Exception volontaire : sur mobile, `.fact` et `.zoom__copy` sont des encarts opaques posés sur la canette. `?debug` expose `window.__fb.canRect()` (rectangle écran de la canette) pour tester ces chevauchements.
   - **Pas d'`pin`, pas de post-processing** : c'est un choix pour la fluidité sur mobile.
+  - **Chargement en deux phases** (performance, exigée par la CI : Lighthouse ≥ 90 en mobile et desktop) :
+    - **Phase 1** (`src/main.ts`, sans three.js) : Lenis, textes (`sections/text.ts`), lecteur trailer, écran de chargement. Le hero montre une **image fixe** de la canette (`public/hero-can.webp` + `src/hero-poster.css`), placée en CSS avec la même formule de cadrage que `poses.hero()`.
+    - **Phase 2** (`src/three/boot.ts`, import dynamique) : toute la 3D, au premier geste (scroll, molette, souris, toucher, clavier), ou tout de suite si la page est déjà défilée ou en `?debug`. Shaders compilés par `compileAsync`, puis fondu image → canvas (`.is-3d`).
+    - **Image fixe** : capturée depuis la scène 3D elle-même par `scripts/make-hero-poster.mjs` (`__fb.snapshot()` en `?debug`). À régénérer après toute modification de la canette, des matériaux, de la pose hero ou du cadrage (`heroZ`, fov) ; mesuré à < 1 px de la 3D. Le script et les tests utilisent `playwright-core` avec Edge/Chrome installé.
+    - Ne rien importer de `three` dans la phase 1 : ça ramènerait three.js (~600 Ko) dans le bundle initial.
+  - **Base** : `base: "/frostbyte/"` dans `vite.config.ts` (GitHub Pages), en dev, build et preview. Les chemins passent par `import.meta.env.BASE_URL` ; dans `index.html`, des chemins absolus (`/…`), que Vite préfixe.
+  - **CI** (`.github/workflows/ci.yml`) : `npm ci` → `npm run build` → Lighthouse CI (`site/lighthouserc.json`) en mobile puis desktop, 3 passes, médiane ≥ 0,9 en performance, accessibilité et bonnes pratiques ; déploiement Pages sur push vers `main`. En local sous Windows, `lhci autorun` échoue sur un `EPERM` au nettoyage du profil temporaire (bug chrome-launcher) : tester avec `lighthouse` seul, ou `lhci assert` sur des rapports existants.
   - **Section trailer** (`src/sections/trailer.ts`, avant le CTA) : vidéos dans `site/public/trailer/` (**versionnées**, nécessaires à GitHub Pages). Rien n'est chargé avant que la section approche (IntersectionObserver, `preload="none"`), puis poster + sources du format courant : 9:16 sur mobile en portrait, 16:9 sinon ; WebM VP9/Opus d'abord, MP4 H.264 en repli. Lecture au clic, son coupé par défaut et activable, pause hors écran. La canette 3D sort par le haut (`poses.away`) et revient au CTA en contournant par la droite hors champ (`awayRight`, `ctaOffRight`) : elle ne doit jamais passer devant le lecteur.
     - **Régénérer après un nouveau rendu du trailer** (depuis `trailer/`, ffmpeg de Remotion) :
       `npx remotion ffmpeg -i out/trailer.mp4 -c copy -movflags +faststart ../site/public/trailer/trailer-16x9.mp4` (idem `trailer-vertical.mp4` → `trailer-9x16.mp4`) ;

@@ -1,6 +1,6 @@
 import { flavors } from "../brand";
 import type { Ctx } from "../scroll/state";
-import { move, reveal, segment } from "../scroll/segment";
+import { move, segment } from "../scroll/segment";
 
 /*
   Trailer : la canette 3D sort par le haut pendant que la section arrive, puis la vidéo (Remotion)
@@ -20,12 +20,10 @@ export function trailer(ctx: Ctx) {
   // Sortie rapide (25 % de l'intervalle) : la canette a quitté l'écran avant que le lecteur n'y entre
   move(tl, ctx, () => ctx.poses.side(flavors.length, last), () => ctx.poses.away(flavors.length, last), 0.25, "power1.in");
   tl.to({}, { duration: 0.75 }); // la canette reste hors champ pendant la vidéo
-
-  reveal(section.querySelector(".trailer__copy")!, section, { start: "top 75%", end: "bottom 25%" });
-  setupPlayer(section);
 }
 
-function setupPlayer(section: HTMLElement) {
+/** Lecteur vidéo (sans three.js : phase 1, voir main.ts). */
+export function setupPlayer(section: HTMLElement) {
   const player = section.querySelector<HTMLElement>(".trailer__player")!;
   const video = player.querySelector<HTMLVideoElement>("video")!;
   const play = player.querySelector<HTMLButtonElement>(".trailer__play")!;

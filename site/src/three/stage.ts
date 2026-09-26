@@ -12,6 +12,8 @@ export type Stage = {
   visibleAt(distance: number): { w: number; h: number };
   /** Demande un rendu à la prochaine frame. */
   invalidate(): void;
+  /** Rendu immédiat, synchrone (captures : le tampon WebGL n'est lisible que dans la même tâche). */
+  renderNow(): void;
   /** Appelé juste avant chaque rendu (application de l'état animé). */
   onBeforeRender(fn: () => void): void;
   /** Remplace l'environnement par une HDRI équirectangulaire (reflets du métal). */
@@ -63,11 +65,13 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
   new ResizeObserver(resize).observe(canvas);
   resize();
 
-  gsap.ticker.add(() => {
-    if (!dirty) return;
+  const renderNow = () => {
     dirty = false;
     for (const fn of beforeRender) fn();
     renderer.render(scene, camera);
+  };
+  gsap.ticker.add(() => {
+    if (dirty) renderNow();
   });
 
   return {
@@ -82,6 +86,7 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
     invalidate() {
       dirty = true;
     },
+    renderNow,
     onBeforeRender(fn) {
       beforeRender.push(fn);
     },
