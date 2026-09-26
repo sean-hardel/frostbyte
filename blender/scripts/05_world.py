@@ -5,7 +5,8 @@
 import bpy
 
 NIGHT = "#0A2540"
-EXPOSURE = 0.8         # AgX : sans ça, un blanc diffus sort à ~80 % de gris
+VIEW_TRANSFORMS = ("Khronos PBR Neutral", "AgX")  # Neutral = tone mapping du site ; AgX en repli
+EXPOSURES = {"Khronos PBR Neutral": 0.35, "AgX": 0.8}  # étiquette blanche sans brûler l'alu
 HDRI_STRENGTH = 1.0
 FILL_COLOR = "#DDE6EE"  # lumière d'ambiance uniforme : débouche les zones noires du studio
 FILL_STRENGTH = 0.12   # dans les reflets de l'alu
@@ -47,8 +48,18 @@ nt.links.new(fill_bg.outputs["Background"], add.inputs[1])
 solid_bg = nt.nodes.new("ShaderNodeBackground")
 solid_bg.label = "FB_solid"
 solid_bg.inputs["Color"].default_value = srgb_to_linear(NIGHT)
+# Transformation de vue : enum dynamique, on essaie dans l'ordre
+view = bpy.context.scene.view_settings
+for vt in VIEW_TRANSFORMS:
+    try:
+        view.view_transform = vt
+        break
+    except TypeError:
+        continue
+EXPOSURE = EXPOSURES.get(view.view_transform, 0.8)
+print(f"[FB] vue : {view.view_transform}, exposition {EXPOSURE}")
 # Compense l'exposition : le fond garde exactement sa couleur à l'écran
-bpy.context.scene.view_settings.exposure = EXPOSURE
+view.exposure = EXPOSURE
 solid_bg.inputs["Strength"].default_value = 2.0 ** -EXPOSURE
 
 light_path = nt.nodes.new("ShaderNodeLightPath")
