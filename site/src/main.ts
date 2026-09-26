@@ -1,4 +1,5 @@
 import "lenis/dist/lenis.css";
+import "../../brand/fonts/fonts.css"; // polices locales (WOFF2), empaquetées et hashées par Vite
 import "./styles.css";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";

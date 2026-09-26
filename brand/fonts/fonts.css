@@ -1,0 +1,23 @@
+/*
+  Polices de marque, embarquées localement (aucun appel à Google Fonts).
+  WOFF2 variables, sous-ensemble latin (couvre le français), issues de Fontsource 5.3.0.
+  Licence : SIL OFL 1.1 (OFL-Syne.txt, OFL-JetBrainsMono.txt).
+  Les noms de famille doivent rester identiques à brand/tokens.json → fonts.
+  Utilisé par site/ (import CSS) ; trailer/ charge les mêmes fichiers via @remotion/fonts.
+*/
+
+@font-face {
+  font-family: "Syne";
+  src: url("./Syne.woff2") format("woff2");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./JetBrainsMono.woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}

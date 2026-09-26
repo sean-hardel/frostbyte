@@ -6,7 +6,7 @@ Marque fictive de boisson énergisante, présentée en trois livrables : un mod�
 
 - **Nom** : FROST/BYTE. **Slogan** : « Stay sharp. Stay cold. »
 - **Palette** : `frost` #EAF6FF (blanc givre), `ice` #00D4FF (cyan glace), `night` #0A2540 (bleu nuit), `alu` #9BA8B8 (gris aluminium)
-- **Typographies** : Syne (titres), JetBrains Mono (texte, HUD), via Google Fonts
+- **Typographies** : Syne (titres), JetBrains Mono (texte, HUD). Elles sont embarquées en local dans `brand/fonts/`, sans aucun appel à Google Fonts.
 - **Univers** : gaming et tech, froid, précis. Brume, fragments de glace, cristaux, HUD.
 - **Canette** : 500 ml slim, Ø 66 mm × 168 mm. Corps blanc satiné, motif de cristaux cyan, condensation, couvercle en alu brossé.
 
@@ -16,7 +16,8 @@ Marque fictive de boisson énergisante, présentée en trois livrables : un mod�
 
 ```
 brand/tokens.json         tokens de marque partagés
-brand/fonts/              JetBrains Mono (TTF, OFL), utilisée pour rendre les SVG
+brand/fonts/              polices locales (OFL) : Syne.woff2 + JetBrainsMono.woff2 (variables, latin) et fonts.css
+                          pour site/ et trailer/ ; JetBrainsMono.ttf pour le rendu des SVG (resvg ne lit pas le WOFF2)
 blender/canette.blend     fichier Blender source
 blender/scripts/NN_*.py   scripts rejouables (un par étape MCP)
 blender/textures/         logo.svg, label.svg (sources) → logo.png, label.png (générés)
@@ -43,7 +44,8 @@ trailer/                  vidéo — Remotion + @remotion/transitions (rendus Bl
 
 - **Blender** 5.2.1 LTS, piloté via le MCP `mcp-for-blender` (config dans [.mcp.json](.mcp.json))
 - **Site** : Vite, TypeScript, `three`, `gsap` + `ScrollTrigger`, `lenis`
-- **Trailer** : Remotion 4 + `@remotion/transitions` + `@remotion/google-fonts`, 1920×1080, 30 fps, 750 frames (25 s)
+- **Trailer** : Remotion 4 + `@remotion/transitions` + `@remotion/fonts`, 1920×1080, 30 fps, 750 frames (25 s)
+- **Polices** : fichiers locaux dans `brand/fonts/`. Le site importe `fonts.css` dans `main.ts` (Vite hashe les WOFF2). Le trailer importe les WOFF2 dans `src/brand.ts` et les charge avec `loadFont` de `@remotion/fonts`, qui bloque le rendu jusqu'au chargement. Les noms de famille doivent rester identiques à `tokens.json → fonts`. Le sous-ensemble latin suffit pour le français ; pour une autre langue, ajouter le sous-ensemble correspondant (Fontsource `@fontsource-variable/*`).
 - **Package manager** : npm
 
 ## Commandes

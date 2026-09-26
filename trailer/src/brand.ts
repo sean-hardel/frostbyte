@@ -1,6 +1,7 @@
 import tokens from "../../brand/tokens.json";
-import { loadFont as loadSyne } from "@remotion/google-fonts/Syne";
-import { loadFont as loadMono } from "@remotion/google-fonts/JetBrainsMono";
+import { loadFont } from "@remotion/fonts";
+import syneUrl from "../../brand/fonts/Syne.woff2";
+import monoUrl from "../../brand/fonts/JetBrainsMono.woff2";
 
 export type Flavor = (typeof tokens.flavors)[number];
 
@@ -8,8 +9,15 @@ export const brand = tokens;
 export const flavors: Flavor[] = tokens.flavors;
 export const colors = tokens.colors;
 
-export const DISPLAY = loadSyne("normal", { weights: ["700", "800"], subsets: ["latin"] }).fontFamily;
-export const MONO = loadMono("normal", { weights: ["400", "500"], subsets: ["latin"] }).fontFamily;
+/*
+  Polices locales (brand/fonts/, WOFF2 variables) : aucun accès réseau au rendu.
+  loadFont bloque le rendu (delayRender) jusqu'au chargement : pas de frame en police de secours.
+*/
+loadFont({ family: tokens.fonts.display, url: syneUrl, weight: "400 800" });
+loadFont({ family: tokens.fonts.mono, url: monoUrl, weight: "100 800" });
+
+export const DISPLAY = `"${tokens.fonts.display}", sans-serif`;
+export const MONO = `"${tokens.fonts.mono}", monospace`;
 
 /* ---------- Timing : 30 fps, grille à 120 BPM (1 temps = 15 frames) ---------- */
 
