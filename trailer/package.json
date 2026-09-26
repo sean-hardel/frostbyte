@@ -5,8 +5,9 @@
   "scripts": {
     "prestudio": "node scripts/check-renders.mjs",
     "studio": "remotion studio",
+    "render:shots": "node scripts/render-shots.mjs",
     "prerender": "node scripts/check-renders.mjs",
-    "render": "remotion render Trailer out/trailer.mp4 --codec=h264 --crf=18",
+    "render": "remotion render Trailer out/trailer.mp4 --codec=h264 --crf=18 && remotion render TrailerVertical out/trailer-vertical.mp4 --codec=h264 --crf=18",
     "still": "remotion still",
     "typecheck": "tsc --noEmit"
   },

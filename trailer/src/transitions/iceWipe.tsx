@@ -1,7 +1,8 @@
 import type React from "react";
 import { AbsoluteFill } from "remotion";
 import type { TransitionPresentation, TransitionPresentationComponentProps } from "@remotion/transitions";
-import { HEIGHT, WIDTH, colors } from "../brand";
+import { colors } from "../brand";
+import { useFormat } from "../format";
 
 /*
   Volet diagonal à arête de glace brisée (même dent que la bande de l'étiquette).
@@ -18,7 +19,7 @@ const AMP = 46; // profondeur des dents (px)
 const SLANT = 420; // inclinaison du front sur la hauteur de l'écran (px)
 
 /** Points de l'arête (haut → bas) pour un front centré en x = front. */
-function edgePoints(front: number) {
+function edgePoints(front: number, HEIGHT: number) {
   const pts: Array<[number, number]> = [];
   for (let y = -TOOTH, i = 0; y <= HEIGHT + TOOTH; y += TOOTH / 2, i++) {
     const x = front + (y / HEIGHT - 0.5) * SLANT + (i % 2 === 0 ? -AMP : AMP) * 0.5;
@@ -36,12 +37,13 @@ const IceWipe: React.FC<TransitionPresentationComponentProps<IceWipeProps>> = ({
   if (presentationDirection === "exiting") {
     return <AbsoluteFill>{children}</AbsoluteFill>;
   }
+  const { width: WIDTH, height: HEIGHT } = useFormat();
   const p = presentationProgress;
   const fromLeft = passedProps.direction === "from-left";
   // Le front traverse tout l'écran, pente et dents comprises
   const travel = WIDTH + SLANT + AMP * 2;
   const front = fromLeft ? -SLANT / 2 - AMP + p * travel : WIDTH + SLANT / 2 + AMP - p * travel;
-  const edge = edgePoints(front);
+  const edge = edgePoints(front, HEIGHT);
   const far = fromLeft ? -WIDTH : WIDTH * 2;
   const polygon = [[far, -TOOTH], ...edge, [far, HEIGHT + TOOTH]]
     .map(([x, y]) => `${(x / WIDTH) * 100}% ${(y / HEIGHT) * 100}%`)

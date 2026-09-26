@@ -97,8 +97,9 @@ export const Stat: React.FC<{
   label: string;
   accent: string;
   align?: "left" | "right";
+  valueSize?: number;
   style?: React.CSSProperties;
-}> = ({ at, value, label, accent, align = "left", style }) => {
+}> = ({ at, value, label, accent, align = "left", valueSize = 112, style }) => {
   const p = useImpact(at);
   const frame = useCurrentFrame();
   if (frame < at) return null;
@@ -122,7 +123,7 @@ export const Stat: React.FC<{
           marginLeft: align === "right" ? "auto" : 0,
         }}
       />
-      <div style={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 112, lineHeight: 1, color: colors.frost }}>{value}</div>
+      <div style={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: valueSize, lineHeight: 1, color: colors.frost }}>{value}</div>
       <div style={{ fontFamily: MONO, fontSize: 28, letterSpacing: "0.3em", color: accent, marginTop: 14 }}>{label}</div>
     </div>
   );

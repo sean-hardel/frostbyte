@@ -1,25 +1,28 @@
 import type React from "react";
 import { AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { BEAT, DISPLAY, MONO, TURNTABLE_FRAMES, brand, colors, flavors } from "../brand";
-import { turntableSrc } from "../components/CanSequence";
+import { BEAT, DISPLAY, MONO, brand, colors, flavors } from "../brand";
+import { shotFrames, shotSrc } from "../components/CanSequence";
+import { useFormat } from "../format";
 import { Crystal } from "../components/Crystal";
-import { Flash, IceShards, Scanlines, Shake, Vignette } from "../components/Fx";
+import { Flash, IceShards, Shake, Vignette } from "../components/Fx";
 import { Typed } from "../components/Hud";
 import { Wordmark, type LetterState } from "../components/Wordmark";
 
 /*
-  Outro (135 frames) — temps : 0 les 3 canettes montent · 30 logo · 60 slogan · 75 infos.
-  Les canettes utilisent la dernière image de chaque turntable (logo de face).
+  Outro — 16:9 (135 frames) : 0 les 3 canettes montent · 30 logo · 60 slogan · 75 infos.
+  9:16 (75 frames) : même enchaînement resserré (15 · 30 · 45).
+  Les canettes utilisent la dernière image du plan « orbit » de chaque saveur (logo de face).
 */
 
 const CANS_AT = 4;
-const LOGO_AT = BEAT * 2; // 30
-const SLOGAN_AT = BEAT * 4; // 60
-const INFO_AT = BEAT * 5; // 75
 
 export const Outro: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const fmt = useFormat();
+  const LOGO_AT = fmt.v(BEAT * 2, BEAT);
+  const SLOGAN_AT = fmt.v(BEAT * 4, BEAT * 2);
+  const INFO_AT = fmt.v(BEAT * 5, BEAT * 3);
   const [sharp, cold] = brand.tagline.split(/(?<=\.)\s/);
 
   const letter = (i: number): LetterState => {
@@ -37,31 +40,33 @@ export const Outro: React.FC = () => {
         {/* Les 3 canettes, en cascade depuis le bas */}
         {flavors.map((f, i) => {
           const p = spring({ frame: frame - CANS_AT - i * 5, fps, config: { damping: 14, stiffness: 170, mass: 0.7 } });
-          const x = (i - 1) * 380;
+          const x = (i - 1) * fmt.v(380, 320);
           return (
             <AbsoluteFill
               key={f.id}
-              style={{ transform: `translate(${x}px, ${300 + (1 - p) * 800}px) scale(0.52) rotate(${(1 - p) * (i - 1) * 12}deg)` }}
+              style={{ transform: `translate(${x}px, ${fmt.v(300, 520) + (1 - p) * 900}px) scale(${fmt.v(0.52, 0.42)}) rotate(${(1 - p) * (i - 1) * 12}deg)` }}
             >
-              <Img src={turntableSrc(f, TURNTABLE_FRAMES)} style={{ width: "100%", height: "100%" }} />
+              <Img src={shotSrc("orbit", f, fmt.id, shotFrames("orbit", fmt.portrait), fmt.portrait)} style={{ width: "100%", height: "100%" }} />
             </AbsoluteFill>
           );
         })}
 
         {/* Logo : cristal + wordmark */}
-        <AbsoluteFill style={{ alignItems: "center", paddingTop: 70 }}>
+        <AbsoluteFill style={{ alignItems: "center", paddingTop: fmt.v(70, 260) }}>
           <Crystal size={120} draw={crystal} rotation={(1 - crystal) * 90} />
           <div style={{ marginTop: 34 }}>
-            <Wordmark width={1040} letter={letter} />
+            <Wordmark layout={fmt.v("line", "stacked")} width={fmt.v(1040, 760)} letter={letter} />
           </div>
           <div
             style={{
               display: "flex",
-              gap: 26,
+              flexDirection: fmt.v("row", "column"),
+              alignItems: "center",
+              gap: fmt.v(26, 4),
               marginTop: 40,
               fontFamily: DISPLAY,
               fontWeight: 700,
-              fontSize: 60,
+              fontSize: fmt.v(60, 64),
               color: colors.frost,
               opacity: Math.min(1, slogan * 1.5),
               transform: `translateY(${(1 - slogan) * 40}px)`,
@@ -90,9 +95,8 @@ export const Outro: React.FC = () => {
         Marque fictive — projet démo.
       </div>
 
-      <IceShards at={LOGO_AT} seed="outro" count={30} origin={[960, 300]} />
+      <IceShards at={LOGO_AT} seed="outro" count={30} origin={fmt.v([960, 300], [540, 520])} />
       <Flash at={[LOGO_AT]} strength={0.55} />
-      <Scanlines opacity={0.05} />
       <Vignette />
     </AbsoluteFill>
   );

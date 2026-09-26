@@ -157,8 +157,8 @@ def shot_macro(scene, n, portrait):
     # Lumière d'accent (plan macro uniquement) : points brillants dans les gouttes
     kick = bpy.data.objects.new("FB_MacroKick", bpy.data.lights.new("FB_MacroKick", "AREA"))
     scene.collection.objects.link(kick)
-    kick.data.size = 0.03
-    kick.data.energy = 25.0  # ne touche que les gouttes (light linking)
+    kick.data.size = 0.14
+    kick.data.energy = 160.0  # ne touche que les gouttes (light linking)
     kick.visible_diffuse = False
     # Light linking (Cycles) : seules les gouttes reçoivent cette lumière, pas le vernis de l'étiquette
     if hasattr(kick, "light_linking"):

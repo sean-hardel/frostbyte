@@ -1,6 +1,7 @@
 import type React from "react";
 import { AbsoluteFill, interpolate, random, useCurrentFrame } from "remotion";
-import { HEIGHT, WIDTH, colors } from "../brand";
+import { colors } from "../brand";
+import { useFormat } from "../format";
 
 /* Effets courts synchronisés sur les temps : flash, tremblement, éclats de glace, scanlines. */
 
@@ -46,8 +47,10 @@ export const IceShards: React.FC<{
   color?: string;
   origin?: [number, number];
   speed?: number;
-}> = ({ at, seed, count = 26, color = colors.ice, origin = [WIDTH / 2, HEIGHT / 2], speed = 1 }) => {
+}> = ({ at, seed, count = 26, color = colors.ice, origin, speed = 1 }) => {
   const frame = useCurrentFrame();
+  const { width: WIDTH, height: HEIGHT } = useFormat();
+  const [ox, oy] = origin ?? [WIDTH / 2, HEIGHT / 2];
   const t = frame - at;
   if (t < 0 || t > 45) return null;
   const life = interpolate(t, [0, 45], [1, 0], { extrapolateRight: "clamp" });
@@ -60,8 +63,8 @@ export const IceShards: React.FC<{
           const dist = v * t * (1 - t / 120);
           const size = 10 + random(`${seed}-s-${i}`) * 34;
           const rot = random(`${seed}-r-${i}`) * 360 + t * (random(`${seed}-w-${i}`) - 0.5) * 24;
-          const x = origin[0] + Math.cos(angle) * dist;
-          const y = origin[1] + Math.sin(angle) * dist;
+          const x = ox + Math.cos(angle) * dist;
+          const y = oy + Math.sin(angle) * dist;
           const filled = random(`${seed}-f-${i}`) > 0.5;
           return (
             <polygon

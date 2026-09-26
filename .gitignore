@@ -7,3 +7,6 @@ trailer/public/renders/
 *.blend1
 *.blend2
 .DS_Store
+__pycache__/
+# Musique du trailer : fournie localement, non versionnée (voir trailer/public/sfx/CREDITS.md)
+trailer/public/musique.mp3
