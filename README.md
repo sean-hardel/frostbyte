@@ -1,5 +1,7 @@
 # FROST/BYTE
 
+[![Démo du site FROST/BYTE : scroll du hero jusqu'à la section finale, zoom sur le logo et 3 saveurs](docs/demo.gif)](https://sean-hardel.github.io/frostbyte/)
+
 [![CI](https://github.com/sean-hardel/frostbyte/actions/workflows/ci.yml/badge.svg)](https://github.com/sean-hardel/frostbyte/actions/workflows/ci.yml)
 
 **Site en ligne : [sean-hardel.github.io/frostbyte](https://sean-hardel.github.io/frostbyte/)**

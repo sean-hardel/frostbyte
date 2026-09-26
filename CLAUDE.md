@@ -56,6 +56,7 @@ trailer/                  vidéo — Remotion + @remotion/transitions (rendus Bl
 | `site/` | `npm run build` | typecheck (`tsc --noEmit`) + build de prod |
 | `site/` | `npm run preview` | sert `dist/` sur `/frostbyte/` (test de la version de prod) |
 | `site/` | `node scripts/make-hero-poster.mjs` | régénère l'image fixe de la canette du hero (après `npm run build`) |
+| `site/` | `node scripts/record-demo.mjs [url]` | régénère `docs/demo.gif` (README) depuis le site en ligne : 1280×720, 15 fps, < 8 Mo ; horloge simulée (`page.clock`) pour un rendu image par image régulier ; ~1 min |
 | `trailer/` | `npm run studio` | prévisualisation (vérifie d'abord les rendus Blender) |
 | `trailer/` | `npm run render:shots` | rendus Blender Cycles GPU de tous les plans (~1 h) |
 | `trailer/` | `npm run render` | vidéos → `out/trailer.mp4` (16:9) et `out/trailer-vertical.mp4` (9:16), h264 crf 18 |
