@@ -2,7 +2,7 @@
 # - 150 images à 30 fps (cadence du trailer), 1920 × 1080
 # - Can_Body : 0 → 450° (linéaire) ; caméra : orbite de 90° (ease in/out) via l'empty Cam_Orbit.
 #   Rotation relative canette/caméra = 360° : logo face caméra à la première et à la dernière image.
-# - Sortie : PNG RGBA (fond transparent, pour composer dans Remotion) dans trailer/public/renders/
+# - Sortie : PNG RGBA (fond transparent, pour composer dans Remotion) dans trailer/public/renders/mint/
 # Idempotent : supprime l'animation et Cam_Orbit existants avant de les recréer.
 # Frame 1 = pose de repos (rotation 0) : 06_export_glb.py reste valable s'il est lancé à la frame 1.
 import bpy
@@ -13,7 +13,7 @@ FPS = 30
 FRAMES = 150  # 5 s
 CAN_TURN = math.radians(450)
 ORBIT = math.radians(90)
-OUTPUT = "//../trailer/public/renders/can_turntable_####"
+OUTPUT = "//../trailer/public/renders/mint/can_####"  # les 3 saveurs : voir 08_render_flavors.py
 
 scene = bpy.context.scene
 body = bpy.data.objects["Can_Body"]

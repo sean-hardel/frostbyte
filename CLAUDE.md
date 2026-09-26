@@ -23,7 +23,7 @@ blender/textures/         logo.svg, label.svg (sources) → logo.png, label.png 
 blender/tools/            rasteriseur SVG → PNG (Node + @resvg/resvg-js)
 site/public/canette.glb   export web de la canette (généré par 06_export_glb.py)
 site/                     landing page — Vite + TS + three + gsap ScrollTrigger + lenis
-trailer/                  vidéo — Remotion + @remotion/three
+trailer/                  vidéo — Remotion + @remotion/transitions (rendus Blender en séquences PNG)
 ```
 
 ### Flux d'assets
@@ -33,7 +33,7 @@ trailer/                  vidéo — Remotion + @remotion/three
    - `label.svg` fait 3072 × 1926 px, soit le ratio exact de la zone d'étiquette (circonférence 207,3 mm × hauteur 130 mm). Ne pas changer ce ratio.
    - x = 1536 correspond à la face avant (-Y dans Blender). x = 0 ≡ 3072 correspond à la couture, à l'arrière. Tout ce qui touche un bord doit être périodique sur 3072 px.
 2. Après un nouveau rendu, relancer `03_materials.py`, qui recharge `//textures/label.png` (chemin relatif, image non packée).
-3. `06_export_glb.py` exporte la canette seule (`Can_Body` + enfants) vers `site/public/canette.glb`, qui pèse environ 144 Ko pour environ 22k triangles. Il faut le relancer après chaque modification du modèle ou des matériaux. Le trailer copiera ce même fichier dans `trailer/public/`.
+3. `06_export_glb.py` exporte la canette seule (`Can_Body` + enfants) vers `site/public/canette.glb`, qui pèse environ 144 Ko pour environ 22k triangles. Il faut le relancer après chaque modification du modèle ou des matériaux. Le trailer n'utilise pas le GLB, mais les séquences PNG rendues par Blender (voir `08_render_flavors`).
    - **Compression Draco** : côté three.js, `GLTFLoader` + `DRACOLoader.setDecoderPath(DRACO_GLTF_CONFIG)` (décodeur fourni par three, empaqueté par Vite, rien à copier).
    - **Textures WebP** (`EXT_texture_webp`) : l'étiquette est réduite à 2048 px à l'export, le `.blend` garde la version 3072 px.
    - **Rugosité de l'alu** : glTF n'exporte pas de procédural, donc elle est exportée en valeur fixe (0,27). Le script remet le shader d'origine après l'export.
@@ -43,7 +43,7 @@ trailer/                  vidéo — Remotion + @remotion/three
 
 - **Blender** 5.2.1 LTS, piloté via le MCP `mcp-for-blender` (config dans [.mcp.json](.mcp.json))
 - **Site** : Vite, TypeScript, `three`, `gsap` + `ScrollTrigger`, `lenis`
-- **Trailer** : Remotion, `@remotion/three` (React Three Fiber), 1920×1080, 30 fps, 750 frames
+- **Trailer** : Remotion 4 + `@remotion/transitions` + `@remotion/google-fonts`, 1920×1080, 30 fps, 750 frames (25 s)
 - **Package manager** : npm
 
 ## Commandes
@@ -53,8 +53,9 @@ trailer/                  vidéo — Remotion + @remotion/three
 | `site/` | `npm run dev` | serveur de dev |
 | `site/` | `npm run build` | typecheck (`tsc --noEmit`) + build de prod |
 | `site/` | `npm run preview` | sert `dist/` (test de la version de prod) |
-| `trailer/` | `npx remotion studio` | prévisualisation |
-| `trailer/` | `npx remotion render Trailer out/trailer.mp4` | rendu vidéo |
+| `trailer/` | `npm run studio` | prévisualisation (vérifie d'abord les rendus Blender) |
+| `trailer/` | `npm run render` | rendu vidéo → `out/trailer.mp4` (h264, crf 18) |
+| `trailer/` | `npm run typecheck` | `tsc --noEmit` |
 
 ## Conventions Blender (MCP)
 
@@ -62,11 +63,11 @@ trailer/                  vidéo — Remotion + @remotion/three
 - Unités en mètres, échelle réelle : la canette mesure 0.066 × 0.168 m.
 - Noms d'objets en anglais, préfixés : `Can_Body` (coque complète : fond bombé, corps, sertissage, couvercle), `Can_Tab` et `Can_Rivet` (enfants de `Can_Body`), `Can_CamTarget`. Matériaux : `MAT_Alu` (slot 0), `MAT_Label` (slot 1, zone d'étiquette z = 16 → 146 mm). UV cylindriques calculés dans `01` : u = 0,5 face avant (-Y), u croissant vers +X, couture à +Y, v = 0 → 1 sur la hauteur de l'étiquette.
 - Éclairage : HDRI Poly Haven `studio_small_03` (packé dans le `.blend`) + fill uniforme faible (débouche les reflets noirs sur l'alu). La caméra voit un fond uni `night` via Light Path > Is Camera Ray. Exposition AgX à +0,8 pour que l'étiquette sorte blanche ; l'intensité du fond est compensée (2^-exposition) pour garder la couleur `night` exacte. Réglages en tête de `05_world.py`.
-- Ordre des scripts : `00_scene_setup` → `01_can_body` → `02_can_tab` → `03_materials` → `04_camera` → `05_world` (après import de l'HDRI) → `06_export_glb` → `07_turntable`. Relancer `02` après `01`, car `01` recrée le parent.
+- Ordre des scripts : `00_scene_setup` → `01_can_body` → `02_can_tab` → `03_materials` → `04_camera` → `05_world` (après import de l'HDRI) → `06_export_glb` → `07_turntable` → `08_render_flavors` (CLI). Relancer `02` après `01`, car `01` recrée le parent.
 - **Animation (turntable)** : `07_turntable.py` anime `Can_Body` (0 → 450°) et orbite la caméra de 90° via l'empty `Cam_Orbit`. Timing : 150 images à 30 fps. Comme la rotation relative canette/caméra fait 360°, le logo est face caméra à la première et à la dernière image.
   - **Export GLB** : il faut le faire à la frame 1 (pose de repos), sinon la rotation animée est figée dans le GLB.
-  - **Rendu** : PNG RGBA à fond transparent, dans `trailer/public/renders/can_turntable_0001.png` → `0150`. On le lance en ligne de commande pour ne pas bloquer Blender ni le MCP :
-    `"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b blender/canette.blend -a`
+  - **Rendu des 3 saveurs** : `08_render_flavors.py` applique la recoloration du site dans `MAT_Label` (même matrice, 3 produits scalaires) et la teinte `flavor.alu`, puis rend le turntable de chaque saveur. Sortie : PNG RGBA à fond transparent, dans `trailer/public/renders/<id>/can_0001.png` → `0150` (gitignoré, ~2 min au total). Le `.blend` n'est pas modifié. On le lance en ligne de commande, pour ne pas bloquer Blender ni le MCP :
+    `"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b blender/canette.blend -P blender/scripts/08_render_flavors.py`
 - Chercher les nœuds de shader par `type` (ex. `n.type == "BSDF_PRINCIPLED"`), jamais par nom, car les noms sont localisés.
 - Ne pas écrire d'identifiants d'enum en dur : lire les valeurs valides via `bl_rna` (exception : `scene.render.engine`, à changer dans un `try/except TypeError`).
 - Régler les couleurs sur les entrées des nœuds, pas sur `material.diffuse_color`, qui ne sert qu'au viewport.
@@ -85,6 +86,10 @@ trailer/                  vidéo — Remotion + @remotion/three
   - **Saveurs** (`brand/tokens.json` → `flavors`) : le fond et l'accent passent par des variables CSS. L'étiquette est recolorée dans le shader par une mat3 (`src/three/palette.ts`) : `label.png` doit rester en 3 couleurs (frost, night, ice). Ajouter une couleur à l'étiquette casserait la recoloration.
   - **Pas d'`pin`, pas de post-processing** : c'est un choix pour la fluidité sur mobile.
 - **Trailer** : les animations dépendent uniquement de `useCurrentFrame()` et `interpolate`/`spring`. Pas de `Math.random()` sans seed (utiliser `random(seed)` de Remotion), pas de `setTimeout` ni de CSS animations. Une séquence par fichier dans `trailer/src/scenes/`.
+  - **Grille rythmique** : 120 BPM, soit 1 temps = `BEAT` = 15 frames (`src/brand.ts`). Les impacts et entrées tombent sur des multiples de `BEAT`, et chaque transition dure 1 temps. Les durées des scènes (`DURATION`) sont choisies pour que chaque scène démarre sur un temps : si on en change une, il faut garder `durée − T` multiple de 15 et `TOTAL` = 750. Une musique à 120 BPM se posera directement.
+  - **Montage** (`src/Trailer.tsx`, `TransitionSeries`) : Intro → Reveal → 3 × Flavor → Outro. Transitions custom dans `src/transitions/` : `iceWipe` (volet à arête de glace) et `punchZoom` (coupe avec flash).
+  - **Logo** : `Wordmark.tsx` et `Crystal.tsx` reprennent les tracés de `blender/textures/logo.svg`. Toute modification du logo doit être reportée dans les deux.
+  - **Canette** : `CanSequence` lit `public/renders/<id>/can_NNNN.png`. `npm run studio` et `npm run render` vérifient d'abord leur présence (`scripts/check-renders.mjs`).
 
 ## Langue
 

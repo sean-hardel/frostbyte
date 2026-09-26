@@ -1,0 +1,25 @@
+{
+  "name": "frostbyte-trailer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prestudio": "node scripts/check-renders.mjs",
+    "studio": "remotion studio",
+    "prerender": "node scripts/check-renders.mjs",
+    "render": "remotion render Trailer out/trailer.mp4 --codec=h264 --crf=18",
+    "still": "remotion still",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.529",
+    "@remotion/google-fonts": "^4.0.529",
+    "@remotion/transitions": "^4.0.529",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.529"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}
