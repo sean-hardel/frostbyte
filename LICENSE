@@ -19,15 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----------------------------------------------------------------------------
-
-Scope: this MIT license covers the source code of this repository (site/src,
-trailer/src, the scripts in blender/scripts, blender/tools, site/scripts and
-trailer/scripts, configuration files and the CI workflow).
-
-It does NOT cover the visual creations and the FROST/BYTE brand, even where
-they are reproduced in code (e.g. the logo paths in trailer/src/components/
-Wordmark.tsx and Crystal.tsx, site/public/favicon.svg, the loader in
-site/index.html): those are licensed under CC BY-NC 4.0, see LICENSE-ASSETS.
-Third-party content keeps its own license, see LICENSE-ASSETS.
