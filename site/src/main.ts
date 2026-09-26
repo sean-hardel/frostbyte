@@ -19,6 +19,7 @@ import { hero } from "./sections/hero";
 import { spin } from "./sections/spin";
 import { zoom } from "./sections/zoom";
 import { buildFlavorSections, flavorsScroll } from "./sections/flavors";
+import { trailer } from "./sections/trailer";
 import { cta } from "./sections/cta";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -54,6 +55,7 @@ async function init() {
   spin(ctx);
   zoom(ctx);
   flavorsScroll(ctx);
+  trailer(ctx);
   cta(ctx);
   driveSegments(ctx);
 

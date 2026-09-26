@@ -368,6 +368,146 @@ main {
   letter-spacing: 0;
 }
 
+/* Trailer : titre puis lecteur ; 16:9 sur desktop, 9:16 sur mobile en portrait (data-format posé en JS) */
+.s-trailer {
+  min-height: 100vh;
+  display: grid;
+  align-content: center;
+  gap: 32px;
+}
+
+.trailer__copy,
+.trailer__player {
+  position: relative;
+  z-index: 2;
+}
+
+.trailer__title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(36px, 7vw, 96px);
+  line-height: 0.95;
+  margin-top: 8px;
+}
+
+.trailer__player {
+  /* Titre + lecteur tiennent dans la hauteur de l'écran */
+  width: min(100%, calc((100svh - 340px) * 16 / 9));
+  justify-self: center;
+  aspect-ratio: 16 / 9;
+  background: color-mix(in srgb, var(--frost) 6%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  overflow: hidden;
+}
+
+.trailer__player[data-format="9x16"] {
+  aspect-ratio: 9 / 16;
+  width: min(100%, calc((100svh - 300px) * 9 / 16));
+}
+
+.trailer__player video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.trailer__play,
+.trailer__sound {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 500 13px var(--font-mono);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* Barre de commandes en bas du lecteur (zone vide des posters) : lecture à gauche, son à droite */
+.trailer__play {
+  left: 14px;
+  bottom: 14px;
+  padding: 12px 20px 12px 14px;
+  border: 0;
+  background: var(--accent);
+  color: var(--bg);
+  white-space: nowrap;
+  transform-origin: left bottom;
+  transition: transform 0.2s ease, opacity 0.3s ease;
+}
+
+.trailer__play:hover {
+  transform: scale(1.05);
+}
+
+.trailer__play svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.trailer__sound {
+  right: 14px;
+  bottom: 14px;
+  padding: 8px 12px;
+  border: 1px solid color-mix(in srgb, var(--frost) 40%, transparent);
+  background: color-mix(in srgb, var(--bg) 75%, transparent);
+  color: var(--frost);
+}
+
+.trailer__sound svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.trailer__sound-waves {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  opacity: 0.25;
+}
+
+.trailer__sound[aria-pressed="true"] .trailer__sound-waves {
+  opacity: 1;
+}
+
+.trailer__play:focus-visible,
+.trailer__sound:focus-visible {
+  outline: 2px solid var(--frost);
+  outline-offset: 3px;
+}
+
+.trailer__player.is-playing .trailer__play {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Mobile : bouton son réduit à l'icône (le libellé reste lu par les lecteurs d'écran) */
+@media (max-width: 767px) {
+  .trailer__sound {
+    padding: 10px;
+  }
+
+  .trailer__sound-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 768px) {
+  .trailer__title {
+    font-size: clamp(36px, 4vw, 72px);
+  }
+}
+
 /* CTA : mobile → texte en bas, canette en haut ; desktop → texte à gauche, canette à droite (poses.cta) */
 .s-cta {
   height: 100vh;

@@ -85,7 +85,26 @@
       <!-- 4. Saveurs : générées depuis brand/tokens.json (src/sections/flavors.ts) -->
       <div id="saveurs" class="flavors"></div>
 
-      <!-- 5. CTA -->
+      <!-- 5. Trailer : vidéo Remotion, chargée en différé (src/sections/trailer.ts) -->
+      <section class="section s-trailer" data-section="trailer" aria-labelledby="trailer-title">
+        <div class="trailer__copy reveal">
+          <span class="hud">// FB-500 — trailer</span>
+          <h2 class="trailer__title" id="trailer-title">Le froid, <span class="accent">en mouvement.</span></h2>
+        </div>
+        <div class="trailer__player">
+          <video preload="none" playsinline aria-label="Trailer FROST/BYTE"></video>
+          <button class="trailer__play" type="button" aria-label="Lire le trailer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+            <span>Lire le trailer</span>
+          </button>
+          <button class="trailer__sound" type="button" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4z" /><path class="trailer__sound-waves" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" /></svg>
+            <span class="trailer__sound-label">Activer le son</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 6. CTA -->
       <section class="section s-cta" data-section="cta">
         <div class="cta__copy reveal">
           <h2 class="cta__title">Choisis ton froid.</h2>

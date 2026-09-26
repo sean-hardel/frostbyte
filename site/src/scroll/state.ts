@@ -100,7 +100,29 @@ export function createPoses(stage: Stage) {
       : { rotY: turns * TURN + 0.25, tilt: 0.08, x: view.w * 0.22, y: 0, scale: 0.95, camY: 0, camZ: heroZ(), flavor };
   };
 
-  return { hero, spinEnd, zoom, side, cta };
+  /** Trailer : la canette sort par le haut de l'écran pour laisser toute la place à la vidéo. */
+  const away = (turns: number, flavor: number): SceneState => {
+    const view = stage.visibleAt(heroZ());
+    return {
+      rotY: turns * TURN + Math.PI, tilt: -0.15, x: portrait() ? 0 : view.w * 0.1, y: view.h * 1.1, scale: 0.7,
+      camY: 0, camZ: heroZ(), flavor,
+    };
+  };
+
+  /**
+   * Retour après le trailer : la canette contourne la vidéo hors champ (par le haut puis la droite)
+   * et n'entre dans sa colonne qu'une fois le lecteur sorti de l'écran (voir sections/cta.ts).
+   */
+  const awayRight = (turns: number, flavor: number): SceneState => ({
+    ...away(turns, flavor),
+    x: stage.visibleAt(heroZ()).w * 1.0,
+  });
+  const ctaOffRight = (turns: number, flavor: number): SceneState => ({
+    ...cta(turns, flavor),
+    x: stage.visibleAt(heroZ()).w * 1.0,
+  });
+
+  return { hero, spinEnd, zoom, side, away, awayRight, ctaOffRight, cta };
 }
 
 export type Poses = ReturnType<typeof createPoses>;
