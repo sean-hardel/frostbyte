@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { HDRLoader } from "three/examples/jsm/loaders/HDRLoader.js";
 import { gsap } from "gsap";
 
 export type Stage = {
@@ -13,6 +14,8 @@ export type Stage = {
   invalidate(): void;
   /** Appelé juste avant chaque rendu (application de l'état animé). */
   onBeforeRender(fn: () => void): void;
+  /** Remplace l'environnement par une HDRI équirectangulaire (reflets du métal). */
+  loadEnvironment(url: string, rotationY?: number): Promise<void>;
 };
 
 export function createStage(canvas: HTMLCanvasElement): Stage {
@@ -27,19 +30,19 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
   });
   renderer.setPixelRatio(dpr);
   renderer.setClearColor(0x000000, 0);
-  renderer.toneMapping = THREE.AgXToneMapping;
-  renderer.toneMappingExposure = 1.35;
+  // Neutral (Khronos PBR) : garde les couleurs de marque et le contraste du métal (AgX les délave)
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = 1.0;
 
   const scene = new THREE.Scene();
 
-  // Studio neutre calculé localement : aucun HDRI à télécharger
+  // Premier rendu : studio calculé localement (immédiat) ; remplacé par l'HDRI réel dès qu'il est chargé
   const pmrem = new THREE.PMREMGenerator(renderer);
   const envScene = new RoomEnvironment();
   scene.environment = pmrem.fromScene(envScene, 0.04).texture;
   envScene.dispose();
-  pmrem.dispose();
 
-  const key = new THREE.DirectionalLight(0xffffff, 1.6);
+  const key = new THREE.DirectionalLight(0xffffff, 1.2);
   key.position.set(1.5, 2, 3);
   scene.add(key);
 
@@ -81,6 +84,17 @@ export function createStage(canvas: HTMLCanvasElement): Stage {
     },
     onBeforeRender(fn) {
       beforeRender.push(fn);
+    },
+    async loadEnvironment(url, rotationY = 0) {
+      const hdr = await new HDRLoader().loadAsync(url);
+      hdr.mapping = THREE.EquirectangularReflectionMapping;
+      const previous = scene.environment;
+      scene.environment = pmrem.fromEquirectangular(hdr).texture;
+      scene.environmentRotation.set(0, rotationY, 0);
+      hdr.dispose();
+      previous?.dispose();
+      pmrem.dispose();
+      dirty = true;
     },
   };
 }

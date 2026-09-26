@@ -60,7 +60,8 @@ alu = next(n for n in bpy.data.materials["MAT_Alu"].node_tree.nodes if n.type ==
 # --- Un rendu animation par saveur ---
 scene = bpy.context.scene
 for flavor in tokens["flavors"]:
-    target = columns(linear(flavor["frost"]), linear(flavor["night"]), linear(flavor["accent"]))
+    label_colors = flavor["label"]  # frost → base, night → ink, ice → accent (comme site/src/three/palette.ts)
+    target = columns(linear(label_colors["base"]), linear(label_colors["ink"]), linear(label_colors["accent"]))
     recolor = target @ ref_inverse
     for i, dot in enumerate(rows):
         dot.inputs[1].default_value = tuple(recolor[i])

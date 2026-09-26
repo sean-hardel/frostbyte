@@ -112,8 +112,9 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: max(16px, env(safe-area-inset-top)) 20px 28px;
-  background: linear-gradient(var(--bg) 40%, transparent);
+  padding: max(16px, env(safe-area-inset-top)) 20px 24px;
+  /* Opaque sur la hauteur du header, fondu en dessous : le texte qui défile passe proprement dessous */
+  background: linear-gradient(var(--bg) 72%, transparent);
   font-size: 13px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -224,7 +225,7 @@ main {
 }
 
 .fact {
-  max-width: 320px;
+  max-width: 440px;
   padding: 20px;
   background: color-mix(in srgb, var(--bg) 94%, transparent);
   border-left: 2px solid var(--accent);
@@ -233,9 +234,10 @@ main {
 .fact__value {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(40px, 6vw, 72px);
+  font-size: clamp(40px, 5vw, 72px);
   line-height: 1;
   margin: 8px 0;
+  white-space: nowrap; /* « 32 mg », « −2 °C » : jamais coupés sur deux lignes */
 }
 
 /* Zoom : accroche en bas à gauche pendant le gros plan sur le logo */
@@ -245,9 +247,10 @@ main {
   align-items: flex-end;
 }
 
+/* Mobile : encart opaque posé sur le bas de la canette en gros plan (comme les .fact) */
 .zoom__copy {
   padding: 20px;
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
 }
 
 .zoom__title {
@@ -280,6 +283,12 @@ main {
   color: var(--accent);
 }
 
+/* Nom en deux tons (comme le trailer) : 2e mot en frost, contraste garanti sur tous les fonds */
+.flavor__name span + span {
+  display: block;
+  color: var(--frost);
+}
+
 .flavor__desc {
   max-width: 44ch;
   margin-top: 12px;
@@ -305,19 +314,21 @@ main {
   letter-spacing: 0;
 }
 
-/* CTA */
+/* CTA : mobile → texte en bas, canette en haut ; desktop → texte à gauche, canette à droite (poses.cta) */
 .s-cta {
   height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 1fr auto auto;
   justify-items: center;
   text-align: center;
 }
 
 .cta__copy {
+  grid-row: 2;
   display: grid;
   gap: 20px;
   justify-items: center;
+  margin-bottom: 32px;
 }
 
 .cta__title {
@@ -413,6 +424,39 @@ main {
 
   .zoom__title {
     font-size: clamp(36px, 3.8vw, 72px);
+  }
+
+  .s-cta {
+    grid-template-rows: 1fr auto;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .cta__copy {
+    grid-row: 1;
+    align-self: center;
+    width: 42%;
+    justify-items: start;
+    margin-bottom: 0;
+  }
+
+  .cta__title {
+    font-size: clamp(44px, 5vw, 96px);
+  }
+
+  .footer {
+    grid-row: 2;
+  }
+}
+
+/* Petits téléphones : le texte de saveur doit tenir sous la canette */
+@media (max-width: 767px) and (max-height: 740px) {
+  .flavor__desc {
+    display: none;
+  }
+
+  .flavor__name {
+    font-size: 36px;
   }
 }
 

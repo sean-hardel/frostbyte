@@ -46,11 +46,11 @@ export function move(
  * Apparition d'un bloc de texte (transition CSS) tant que `trigger` (par défaut le bloc lui-même)
  * traverse l'écran.
  */
-export function reveal(el: Element, trigger: Element = el) {
+export function reveal(el: Element, trigger: Element = el, range = { start: "top 85%", end: "bottom 15%" }) {
   ScrollTrigger.create({
     trigger,
-    start: "top 85%",
-    end: "bottom 15%",
+    start: range.start,
+    end: range.end,
     toggleClass: { targets: el, className: "is-in" },
   });
 }

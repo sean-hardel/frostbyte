@@ -16,6 +16,13 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, t
   return node;
 }
 
+/** Nom en deux tons : un <span> par mot (le 2e passe en frost, voir styles.css). */
+function flavorName(name: string) {
+  const h2 = el("h2", "flavor__name");
+  h2.append(...name.split(" ").map((word) => el("span", undefined, word)));
+  return h2;
+}
+
 function stat(value: string, label: string) {
   const li = el("li");
   li.append(el("strong", undefined, value), label);
@@ -34,7 +41,7 @@ function flavorSection(f: Flavor, index: number) {
   stats.append(stat("0 g", "sucre"), stat("32 mg", "caféine"), stat(String(copy.kcal), "kcal"));
   box.append(
     el("span", "hud", `Saveur ${String(index + 1).padStart(2, "0")} / ${String(flavors.length).padStart(2, "0")}`),
-    el("h2", "flavor__name", f.name),
+    flavorName(f.name),
     el("p", "flavor__notes", f.notes),
     el("p", "flavor__desc", copy.desc),
     stats,
@@ -61,6 +68,8 @@ export function flavorsScroll(ctx: Ctx) {
     move(tl, ctx, from, () => ctx.poses.side(i + 1, i), 0.8, "power2.inOut");
     tl.to({}, { duration: 0.2 }); // maintien : la saveur est lisible avant la suivante
 
-    reveal(section.querySelector(".flavor__copy")!);
+    // Visible tant que la section est posée ; s'efface dès qu'elle repart vers le haut,
+    // sinon (mobile) le bloc remonterait à travers la canette placée au-dessus
+    reveal(section.querySelector(".flavor__copy")!, section, { start: "top 75%", end: "bottom 92%" });
   });
 }

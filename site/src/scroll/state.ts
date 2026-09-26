@@ -86,13 +86,15 @@ export function createPoses(stage: Stage) {
       : { rotY: turns * TURN - 0.35, tilt: -0.06, x: view.w * 0.22, y: 0, scale: 1, camY: 0, camZ: heroZ(), flavor };
   };
 
-  /** CTA : canette centrée sous le titre et le bouton. */
+  /**
+   * CTA : la canette reste dans sa colonne (droite en paysage, haut en portrait), le titre
+   * occupe l'autre ; aucune trajectoire ne croise le texte (vérifié par le test ?debug).
+   */
   const cta = (turns: number, flavor: number): SceneState => {
     const view = stage.visibleAt(heroZ());
-    return {
-      rotY: turns * TURN + 0.3, tilt: 0.1, x: 0, y: -view.h * 0.12, scale: 0.75,
-      camY: 0, camZ: heroZ(), flavor,
-    };
+    return portrait()
+      ? { rotY: turns * TURN + 0.25, tilt: 0.08, x: 0, y: view.h * 0.24, scale: 0.5, camY: 0, camZ: heroZ(), flavor }
+      : { rotY: turns * TURN + 0.25, tilt: 0.08, x: view.w * 0.22, y: 0, scale: 0.95, camY: 0, camZ: heroZ(), flavor };
   };
 
   return { hero, spinEnd, zoom, side, cta };

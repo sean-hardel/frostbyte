@@ -38,7 +38,8 @@ type Palette = {
 };
 
 function paletteOf(f: Flavor): Palette {
-  const target = columns(linear(f.frost), linear(f.night), linear(f.accent));
+  // Couleurs d'étiquette propres à la saveur (≠ couleurs de page) : frost → base, night → ink, ice → accent
+  const target = columns(linear(f.label.base), linear(f.label.ink), linear(f.label.accent));
   return {
     recolor: target.multiply(refInverse),
     alu: linear(f.alu),
@@ -93,7 +94,7 @@ export function createPalette(can: Can): PaletteController {
       for (let k = 0; k < 9; k++) {
         m[k] = a.recolor.elements[k] * (1 - f) + b.recolor.elements[k] * f;
       }
-      can.alu.color.lerpColors(a.alu, b.alu, f);
+      for (const mat of can.alu) mat.color.lerpColors(a.alu, b.alu, f);
 
       // Interpolation en sRGB pour le CSS (fondu perçu plus régulier)
       bg.lerpColors(a.bg, b.bg, f);
