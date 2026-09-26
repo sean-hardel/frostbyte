@@ -2,14 +2,16 @@
 
 ## Musique
 
-| Fichier | Source | Licence |
-|---|---|---|
-| `../musique.mp3` | Fournie par le propriétaire du projet | **Non renseignée — à compléter** |
+| Fichier | Titre | Artiste | Source | Licence |
+|---|---|---|---|---|
+| `../musique.mp3` | « 60,000 Light Years » (2:55, 120 BPM) | Jim_Combs | [Pixabay](https://pixabay.com/music/upbeat-60000-light-years-140306/) | [Pixabay Content License](https://pixabay.com/service/license-summary/) |
 
-Le fichier ne contient aucune métadonnée (artiste, titre, licence). Il **n'est pas versionné**
-(`.gitignore`) : il faut le placer dans `trailer/public/musique.mp3` avant `npm run studio` ou `npm run render`.
+La Pixabay Content License autorise l'usage gratuit, y compris commercial, sans attribution obligatoire ;
+le crédit est donné par courtoisie (ici, dans le README et dans le pied de page du site). Elle interdit
+notamment de redistribuer le morceau seul, tel quel.
+C'est pourquoi le fichier **n'est pas versionné** (`.gitignore`) : le télécharger depuis la page Pixabay
+et le placer dans `trailer/public/musique.mp3` avant `npm run studio` ou `npm run render`.
 Extrait utilisé : à partir de ~95,5 s (25 s en 16:9, 15 s en 9:16), voir `MUSIC_START_SECONDS` dans `src/brand.ts`.
-Avant toute diffusion publique du trailer, vérifier que la licence de la musique l'autorise.
 
 ## Effets sonores
 

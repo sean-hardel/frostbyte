@@ -412,7 +412,15 @@ main {
   gap: 8px;
   width: 100%;
   font-size: 12px;
+  text-align: left; /* la section CTA est centrée sur mobile */
   opacity: 0.7;
+}
+
+/* Crédit de la musique du trailer : lien souligné, cliquable au-dessus du canvas */
+.footer__credit a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  pointer-events: auto;
 }
 
 /* ---------- Apparitions (classe posée par ScrollTrigger) ---------- */
