@@ -45,3 +45,22 @@ le site est déployé sur GitHub Pages. Les rapports Lighthouse sont disponibles
   [trailer/public/sfx/CREDITS.md](trailer/public/sfx/CREDITS.md).
 - **HDRI** : « Studio Small 03 » par Greg Zaal, [Poly Haven](https://polyhaven.com/a/studio_small_03), CC0.
 - **Polices** : Syne et JetBrains Mono, SIL Open Font License 1.1 (`brand/fonts/`).
+
+## Licence
+
+Le dépôt mélange du code, des créations visuelles et des contenus tiers ; chacun a sa licence.
+
+| Contenu | Licence |
+|---|---|
+| **Code** : `site/src`, `trailer/src`, scripts (`blender/scripts`, `blender/tools`, `site/scripts`, `trailer/scripts`), configuration, CI | [MIT](LICENSE) — © 2026 Sean Hardel |
+| **Créations visuelles et marque** : nom, logo et identité FROST/BYTE, textures (`blender/textures/`), modèle et rendus Blender (`canette.blend`, `canette.glb`, `hero-can.webp`), posters du trailer, `docs/demo.gif` | [CC BY-NC 4.0](LICENSE-ASSETS) — © 2026 Sean Hardel |
+| **Musique** du trailer (non versionnée) | [Pixabay Content License](https://pixabay.com/service/license-summary/) |
+| **Vidéos du trailer** (`site/public/trailer/*.mp4`, `*.webm`) | Exclues de la CC, car elles contiennent la musique Pixabay : tous droits réservés pour l'image, musique sous licence Pixabay |
+| **Effets sonores** (`trailer/public/sfx/`) | CC0 (Freesound) |
+| **HDRI** « Studio Small 03 » (dans `canette.blend` et `site/public/env/`) | CC0 (Poly Haven) |
+| **Polices** Syne et JetBrains Mono (`brand/fonts/`) | [SIL OFL 1.1](brand/fonts/OFL-Syne.txt) ([JetBrains Mono](brand/fonts/OFL-JetBrainsMono.txt)) |
+
+La licence MIT couvre le code, mais pas le logo qu'il reproduit (`Wordmark.tsx`, `Crystal.tsx`, favicon,
+écran de chargement), qui reste sous CC BY-NC 4.0. FROST/BYTE est une marque fictive : la CC ne donne aucun
+droit sur le nom ou le logo pour désigner un autre produit. Détail complet et liste des fichiers :
+[LICENSE-ASSETS](LICENSE-ASSETS).
