@@ -5,22 +5,69 @@ import type { Ctx, SceneState } from "./state";
 /*
   Chaque section pilote la canette pendant son propre intervalle de scroll :
   du moment où son haut entre par le bas de l'écran jusqu'à ce que son bas y arrive.
-  Les intervalles des sections se suivent sans chevauchement ; chaque tween part
-  explicitement de la pose de fin de la section précédente (fromTo), donc le scroll
-  arrière et le rechargement en milieu de page restent cohérents.
+  Les intervalles se suivent sans chevauchement ; chaque tween part explicitement de la
+  pose de fin de la section précédente (fromTo) et définit TOUTES les propriétés de l'état.
+
+  Pilote unique (driveSegments) : les timelines de section sont en pause, et une seule
+  valeur de scroll lissée choisit la section active, qui est la seule à écrire l'état.
+  (Avec un scrub par section, un scroll rapide traversant plusieurs sections laissait
+  gagner la dernière timeline à finir son lissage : la canette pouvait rester dans la
+  mauvaise pose.)
 */
-export function segment(ctx: Ctx, trigger: Element) {
-  return gsap.timeline({
-    defaults: { ease: "none" },
-    scrollTrigger: {
-      trigger,
-      start: "top bottom",
-      end: "bottom bottom",
-      scrub: ctx.scrub,
-      invalidateOnRefresh: true,
+type Segment = { tl: gsap.core.Timeline; trigger: HTMLElement; start: number; end: number };
+const segments: Segment[] = [];
+
+export function segment(_ctx: Ctx, trigger: Element) {
+  const tl = gsap.timeline({ paused: true, defaults: { ease: "none" } });
+  segments.push({ tl, trigger: trigger as HTMLElement, start: 0, end: 0 });
+  return tl;
+}
+
+/** À appeler une fois, après la création de toutes les sections. */
+export function driveSegments(ctx: Ctx) {
+  const smooth = { y: window.scrollY };
+  let last: Segment | null = null;
+
+  const apply = () => {
+    let active = segments[0];
+    for (const s of segments) if (smooth.y >= s.start) active = s;
+    const p = gsap.utils.clamp(0, 1, (smooth.y - active.start) / Math.max(1, active.end - active.start));
+    // Changement de section : la timeline peut déjà être à `p` sans avoir écrit l'état en dernier ;
+    // un aller-retour de progression force son rendu.
+    if (active !== last) active.tl.progress(p < 0.5 ? 1 : 0, true);
+    active.tl.progress(p);
+    last = active;
+    ctx.stage.invalidate();
+  };
+
+  const measure = () => {
+    for (const s of segments) {
+      const top = s.trigger.getBoundingClientRect().top + window.scrollY;
+      s.start = top - innerHeight;
+      s.end = top + s.trigger.offsetHeight - innerHeight;
+      s.tl.invalidate(); // poses réévaluées (resize, rotation d'écran)
+    }
+    last = null;
+    smooth.y = window.scrollY;
+    apply();
+  };
+
+  // Lissage (équivalent du scrub : 0.8) ; direct en prefers-reduced-motion
+  const follow =
+    ctx.scrub === true ? null : gsap.quickTo(smooth, "y", { duration: ctx.scrub, ease: "power3.out", onUpdate: apply });
+  ScrollTrigger.create({
+    start: 0,
+    end: "max",
+    onUpdate: () => {
+      if (follow) follow(window.scrollY);
+      else {
+        smooth.y = window.scrollY;
+        apply();
+      }
     },
-    onUpdate: ctx.stage.invalidate,
   });
+  ScrollTrigger.addEventListener("refresh", measure);
+  measure();
 }
 
 /** Valeurs fonctionnelles : réévaluées à chaque refresh (resize, rotation d'écran). */

@@ -81,25 +81,79 @@ a {
   letter-spacing: 0.04em;
 }
 
-.loader__bar {
-  width: 160px;
-  height: 2px;
-  background: color-mix(in srgb, var(--frost) 15%, transparent);
-  overflow: hidden;
+/*
+  Cristal : piloté en CSS dès le premier paint (le CSS arrive avant le JS, qui est l'essentiel du
+  temps de chargement ; le GLB, préchargé en parallèle, arrive d'un bloc). L'hexagone se trace
+  jusqu'à ~85 % pendant le chargement, puis .is-loaded (canette prête) le referme et déploie
+  branches et pixels, comme dans l'intro du trailer.
+*/
+.loader__crystal {
+  width: 120px;
+  height: 120px;
+  overflow: visible;
+  animation: crystal-turn 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-.loader__bar span {
-  display: block;
-  width: 40%;
-  height: 100%;
-  background: var(--accent);
-  animation: loader 1.1s ease-in-out infinite;
+@keyframes crystal-turn {
+  from { transform: rotate(-90deg); }
+  to { transform: rotate(0deg); }
 }
 
-@keyframes loader {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(250%); }
+.loader__hex {
+  fill: none;
+  stroke: var(--frost);
+  stroke-width: 10;
+  stroke-linecap: square;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: hex-draw 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
 }
+
+@keyframes hex-draw {
+  to { stroke-dashoffset: 0.15; }
+}
+
+.loader.is-loaded .loader__hex {
+  animation: hex-close 0.35s ease-out forwards;
+}
+
+/* Repart d'où hex-draw s'est arrêté (sans « from », l'animation repartirait de 1 : flash vide) */
+@keyframes hex-close {
+  from { stroke-dashoffset: 0.15; }
+  to { stroke-dashoffset: 0; }
+}
+
+.loader__arms,
+.loader__pixels {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0);
+  opacity: 0;
+}
+
+.loader__arms {
+  fill: none;
+  stroke: var(--accent);
+  stroke-linecap: square;
+  stroke-width: 8;
+  transition: transform 0.45s cubic-bezier(0.2, 1.5, 0.4, 1), opacity 0.2s;
+}
+
+.loader__arms path:first-child {
+  stroke-width: 10;
+}
+
+.loader__pixels {
+  fill: var(--frost);
+  transition: transform 0.3s 0.25s cubic-bezier(0.2, 1.6, 0.4, 1), opacity 0.2s 0.25s;
+}
+
+.loader.is-loaded .loader__arms,
+.loader.is-loaded .loader__pixels {
+  transform: scale(1);
+  opacity: 1;
+}
+
 
 /* ---------- Nav ---------- */
 
@@ -465,7 +519,22 @@ main {
     transition: none;
   }
 
-  .loader__bar span {
-    animation: none;
+  /* Cristal affiché complet, sans animation */
+  .loader__crystal,
+  .loader__hex,
+  .loader__arms,
+  .loader__pixels {
+    animation: none !important;
+    transition: none;
+  }
+
+  .loader__hex {
+    stroke-dashoffset: 0;
+  }
+
+  .loader__arms,
+  .loader__pixels {
+    transform: none;
+    opacity: 1;
   }
 }

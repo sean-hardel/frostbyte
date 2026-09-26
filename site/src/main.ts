@@ -6,9 +6,15 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { setupLenis } from "./scroll/lenis";
 import { applyState, createPoses, type Ctx } from "./scroll/state";
+import { driveSegments } from "./scroll/segment";
 import { createStage } from "./three/stage";
-import { loadCan } from "./three/can";
+import { applyCondensation, loadCan } from "./three/can";
 import { createPalette } from "./three/palette";
+import { createParticles } from "./three/particles";
+import { createPointer } from "./input/pointer";
+import condensationNormalUrl from "../../blender/textures/condensation_normal.webp";
+import condensationMaskUrl from "../../blender/textures/condensation_mask.webp";
+import { brand } from "./brand";
 import { hero } from "./sections/hero";
 import { spin } from "./sections/spin";
 import { zoom } from "./sections/zoom";
@@ -39,26 +45,63 @@ async function init() {
     poses,
     reduced,
     scrub: reduced ? true : 0.8,
+    pointer: createPointer(reduced, stage.invalidate),
   };
   stage.onBeforeRender(() => applyState(ctx.state, stage, can, palette));
+  setupParticles(ctx, palette.accent);
 
   hero(ctx);
   spin(ctx);
   zoom(ctx);
   flavorsScroll(ctx);
   cta(ctx);
+  driveSegments(ctx);
 
   ScrollTrigger.refresh();
   stage.invalidate();
-  requestAnimationFrame(() => loader.classList.add("is-done"));
+  // Le cristal finit de se dessiner (branches, pixels) avant que l'écran de chargement s'efface
+  loader.classList.add("is-loaded");
+  setTimeout(() => loader.classList.add("is-done"), reduced ? 0 : 750);
 
-  // HDRI studio (512 Ko) chargée après le premier affichage : ne retarde pas l'apparition de la canette
+  // Assets non critiques, chargés après le premier affichage :
+  // HDRI studio (512 Ko) pour les reflets, condensation (246 Ko) sur l'étiquette
   stage
     .loadEnvironment(`${import.meta.env.BASE_URL}env/studio_small_03_512.hdr`, ENV_ROTATION)
     .then(() => document.documentElement.classList.add("env-ready"))
     .catch((err: unknown) => console.warn("HDRI non chargée, studio de repli conservé", err));
+  applyCondensation(can, stage, condensationNormalUrl, condensationMaskUrl).catch((err: unknown) =>
+    console.warn("Condensation non chargée", err),
+  );
 
   if (new URLSearchParams(location.search).has("debug")) exposeDebug(stage, can);
+}
+
+/**
+ * Particules de givre : défilent avec le scroll (parallaxe), s'excitent avec la vitesse de scroll,
+ * s'écartent de la souris. Mises à jour juste avant chaque rendu (rendu à la demande).
+ */
+function setupParticles(ctx: Ctx, accent: THREE.Color) {
+  const { stage, pointer, reduced } = ctx;
+  const particles = createParticles(stage, new THREE.Color(brand.colors.frost));
+  const velocity = { v: 0 };
+  if (!reduced) {
+    ScrollTrigger.create({
+      start: 0,
+      end: "max",
+      onUpdate: (self) => {
+        velocity.v = THREE.MathUtils.clamp(self.getVelocity() / 2500, -1, 1);
+        gsap.to(velocity, { v: 0, duration: 0.8, ease: "power2.out", overwrite: true, onUpdate: stage.invalidate });
+      },
+    });
+  }
+  const u = particles.uniforms;
+  stage.onBeforeRender(() => {
+    u.uScroll.value = reduced ? 0 : (window.scrollY / innerHeight) * 0.12;
+    u.uVelocity.value = velocity.v;
+    u.uMouse.value.set(pointer.x, pointer.y, pointer.enabled ? pointer.presence : 0);
+    u.uAspect.value = stage.camera.aspect;
+    u.uAccent.value.copy(accent);
+  });
 }
 
 /** Rotation de l'HDRI autour de Y : place le grand softbox en reflet sur la face avant. */
@@ -88,6 +131,6 @@ function exposeDebug(stage: ReturnType<typeof createStage>, can: Awaited<ReturnT
 
 init().catch((err: unknown) => {
   console.error(err);
-  loader.querySelector(".loader__bar")?.remove();
+  loader.classList.add("is-error");
   loader.append(Object.assign(document.createElement("p"), { textContent: "Impossible de charger la canette 3D." }));
 });

@@ -3,6 +3,7 @@ import { CAN } from "../brand";
 import type { Stage } from "../three/stage";
 import type { Can } from "../three/can";
 import type { PaletteController } from "../three/palette";
+import type { Pointer } from "../input/pointer";
 
 /** État unique animé par les ScrollTriggers, appliqué à la scène juste avant chaque rendu. */
 export type SceneState = {
@@ -25,6 +26,8 @@ export type Ctx = {
   reduced: boolean;
   /** Valeur de scrub : lissage en secondes, ou true (direct) en reduced-motion. */
   scrub: number | true;
+  /** Souris lissée (parallaxe, particules) ; `enabled` = false au tactile et en reduced-motion. */
+  pointer: Pointer;
 };
 
 export function applyState(s: SceneState, stage: Stage, can: Can, palette: PaletteController) {

@@ -56,6 +56,8 @@ function srgbRaw(hex: string) {
 export type PaletteController = {
   /** t ∈ [0, flavors.length - 1] : 0 = mint, 1 = berry, 2 = citrus, valeurs intermédiaires = fondu. */
   set(t: number): void;
+  /** Accent courant (espace linéaire, pour la 3D : particules). */
+  readonly accent: THREE.Color;
 };
 
 export function createPalette(can: Can): PaletteController {
@@ -76,9 +78,11 @@ export function createPalette(can: Can): PaletteController {
   const root = document.documentElement.style;
   const bg = new THREE.Color();
   const accent = new THREE.Color();
+  const accentLinear = new THREE.Color();
   let current = -1;
 
   return {
+    accent: accentLinear,
     set(t) {
       const max = palettes.length - 1;
       t = THREE.MathUtils.clamp(t, 0, max);
@@ -101,6 +105,7 @@ export function createPalette(can: Can): PaletteController {
       accent.lerpColors(a.accent, b.accent, f);
       root.setProperty("--bg", `#${bg.getHexString(THREE.LinearSRGBColorSpace)}`);
       root.setProperty("--accent", `#${accent.getHexString(THREE.LinearSRGBColorSpace)}`);
+      accentLinear.setRGB(accent.r, accent.g, accent.b, THREE.SRGBColorSpace);
     },
   };
 }

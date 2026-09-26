@@ -7,6 +7,8 @@ import type { Stage } from "./stage";
 export type Can = {
   /** Groupe piloté par le scroll (position, rotation, échelle). */
   pivot: THREE.Group;
+  /** Parallaxe souris (hero), entre le scroll et le flottement. */
+  tilt: THREE.Group;
   /** Groupe enfant pour le flottement idle, indépendant du scroll. */
   idle: THREE.Group;
   /** Alu du corps (stries) + variante lisse pour languette et rivet ; teintés ensemble par la palette. */
@@ -99,9 +101,39 @@ export async function loadCan(stage: Stage): Promise<Can> {
 
   const idle = new THREE.Group();
   idle.add(model);
+  const tilt = new THREE.Group();
+  tilt.add(idle);
   const pivot = new THREE.Group();
-  pivot.add(idle);
+  pivot.add(tilt);
   stage.scene.add(pivot);
 
-  return { pivot, idle, alu: [alu, aluSmooth], label };
+  return { pivot, tilt, idle, alu: [alu, aluSmooth], label };
+}
+
+/*
+  Condensation : normal map + masque « mouillé » générés dans Blender (blender/scripts/09_condensation.py),
+  chargés après le premier affichage. Les gouttes creusent le relief (normalMap, y compris sous le vernis)
+  et sont plus brillantes que le papier (roughnessMap : multiplicateur, canal G).
+  Répétition entière en u (3) pour boucler sans couture autour de la canette ; v ajusté pour des gouttes
+  rondes (étiquette 207 × 130 mm → tuile ≈ 69 mm).
+*/
+export async function applyCondensation(can: Can, stage: Stage, normalUrl: string, maskUrl: string) {
+  const loader = new THREE.TextureLoader();
+  const [normal, mask] = await Promise.all([loader.loadAsync(normalUrl), loader.loadAsync(maskUrl)]);
+  const anisotropy = Math.min(8, stage.renderer.capabilities.getMaxAnisotropy());
+  for (const tex of [normal, mask]) {
+    tex.colorSpace = THREE.NoColorSpace; // données, pas une couleur
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(3, 3 * (130 / 207));
+    tex.anisotropy = anisotropy;
+  }
+  const label = can.label;
+  label.normalMap = normal;
+  label.normalScale.set(1, 1);
+  label.clearcoatNormalMap = normal;
+  label.clearcoatNormalScale.set(1, 1);
+  label.roughnessMap = mask;
+  label.needsUpdate = true;
+  stage.invalidate();
 }
