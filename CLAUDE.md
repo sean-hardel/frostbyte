@@ -134,7 +134,8 @@ Même fonctionnement que le repo PortFolio de Sean. `main` (production, déploy�
   5. `git push -u origin <branche>`, puis `gh pr create --base develop --title "<type>: <sujet>" --body "… Closes #<n°>"` (toujours `--base develop` : la branche par défaut du repo est `main`).
   6. `gh pr checks --watch` : attendre la CI, la faire passer si elle échoue.
 - Quand Sean demande de « commit et push », ça veut désormais dire : issue, branche, commits, PR vers `develop`, CI verte. **Fusionner seulement quand il le demande** : `gh pr merge <n°> --merge --delete-branch` (merge commit, comme PortFolio ; pas de squash ni de rebase).
-- **Release** (« mets en prod », « release ») : PR `develop` → `main` (`gh pr create --base main --head develop --title "release: …"`), CI verte, fusion par merge commit, ce qui déclenche le déploiement Pages. Tag et release GitHub (`gh release create vX.Y.Z --target <SHA complet de main>`) seulement si Sean donne un numéro de version.
+- **Release** (« mets en prod », « release ») : PR `develop` → `main` (`gh pr create --base main --head develop --title "release: …"`), CI verte, fusion par merge commit, ce qui déclenche le déploiement Pages.
+  - **Fermeture des issues** : le `Closes #n` d'une PR vers `develop` ne ferme rien, car GitHub ne l'applique qu'aux fusions dans la branche par défaut (`main`). Le corps de la PR de release doit donc lister une ligne `Closes #n` par issue livrée (les retrouver avec `gh issue list --state open`). Tag et release GitHub (`gh release create vX.Y.Z --target <SHA complet de main>`) seulement si Sean donne un numéro de version.
 - Après une fusion dans `main`, remettre `develop` au niveau si besoin : c'est une PR `main` → `develop`, jamais un push.
 - Le job `Build + Lighthouse` de `ci.yml` est le check obligatoire de la protection : le renommer oblige à mettre à jour la protection des deux branches (`gh api -X PUT repos/sean-hardel/frostbyte/branches/<b>/protection`).
 
