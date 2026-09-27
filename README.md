@@ -36,6 +36,11 @@ typecheck et build du site, puis Lighthouse CI en profil mobile et desktop (3 pa
 la performance, l'accessibilité ou les bonnes pratiques passent sous 90. Sur un push vers `main`, si tout passe,
 le site est déployé sur GitHub Pages. Les rapports Lighthouse sont disponibles en artefact de chaque run.
 
+## Développement
+
+Ce projet a été développé avec [Claude Code](https://claude.com/claude-code) comme assistant de développement.
+La conception, les choix techniques, la direction artistique et la validation à chaque étape sont de Sean Hardel.
+
 ## Crédits
 
 - **Musique du trailer** : « 60,000 Light Years » par **Jim_Combs**, sur
