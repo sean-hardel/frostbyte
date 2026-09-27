@@ -1,10 +1,14 @@
-# CI du site : typecheck + build + Lighthouse CI (mobile et desktop, seuil 90) sur chaque push et PR ;
-# déploiement sur GitHub Pages sur push vers main uniquement, si tout est passé.
+# CI du site : typecheck + build + Lighthouse CI (mobile et desktop, seuil 90) sur toutes les PR vers
+# develop et main, et sur push vers ces deux branches (fusions) ; déploiement sur GitHub Pages sur push
+# vers main uniquement, si tout est passé. Le job « Build + Lighthouse » est un check obligatoire
+# de la protection de main et develop : ne pas le renommer sans mettre à jour la protection.
 name: CI
 
 on:
-  push:
   pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
 
 permissions:
   contents: read

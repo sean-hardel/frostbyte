@@ -2,7 +2,7 @@
 
 [![Démo du site FROST/BYTE : scroll du hero jusqu'à la section finale, zoom sur le logo et 3 saveurs](docs/demo.gif)](https://sean-hardel.github.io/frostbyte/)
 
-[![CI](https://github.com/sean-hardel/frostbyte/actions/workflows/ci.yml/badge.svg)](https://github.com/sean-hardel/frostbyte/actions/workflows/ci.yml)
+[![CI](https://github.com/sean-hardel/frostbyte/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sean-hardel/frostbyte/actions/workflows/ci.yml)
 
 **Site en ligne : [sean-hardel.github.io/frostbyte](https://sean-hardel.github.io/frostbyte/)**
 
@@ -31,10 +31,25 @@ Conventions, pipeline d'assets et détails techniques : [CLAUDE.md](CLAUDE.md).
 
 ## CI et déploiement
 
-Le workflow [`ci.yml`](.github/workflows/ci.yml) tourne sur chaque push et chaque pull request : installation,
-typecheck et build du site, puis Lighthouse CI en profil mobile et desktop (3 passes chacun). Le job échoue si
-la performance, l'accessibilité ou les bonnes pratiques passent sous 90. Sur un push vers `main`, si tout passe,
-le site est déployé sur GitHub Pages. Les rapports Lighthouse sont disponibles en artefact de chaque run.
+Le workflow [`ci.yml`](.github/workflows/ci.yml) tourne sur chaque pull request vers `develop` ou `main`, et à
+chaque fusion dans ces branches : installation, typecheck et build du site, puis Lighthouse CI en profil mobile et
+desktop (3 passes chacun). Le job échoue si la performance, l'accessibilité ou les bonnes pratiques passent sous
+90. Sur un push vers `main`, et seulement là, si tout passe, le site est déployé sur GitHub Pages. Les rapports
+Lighthouse sont disponibles en artefact de chaque run.
+
+## Contribution
+
+- `main` : production, protégée, déployée automatiquement sur GitHub Pages.
+- `develop` : intégration, protégée.
+- Une issue par tâche, une branche par issue, créée depuis `develop` : `feat/<n°>-<sujet>`, `fix/<n°>-<sujet>`,
+  `docs/<n°>-<sujet>` (aussi `ci/…`, `chore/…`), par exemple `ci/1-workflow-branches`.
+- Commits au format [Conventional Commits](https://www.conventionalcommits.org/fr/) (`feat:`, `fix:`, `docs:`,
+  `ci:`, `chore:`…).
+- Une PR vers `develop`, qui ferme l'issue (`Closes #n°`), fusionnée par merge commit une fois la CI verte.
+- Release : PR `develop` → `main`, puis tag et release GitHub.
+
+`main` et `develop` sont protégées : PR obligatoire, check « Build + Lighthouse » vert obligatoire, conversations
+résolues, pas de push direct ni de force push, y compris pour les administrateurs.
 
 ## Développement
 
